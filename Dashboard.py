@@ -64,10 +64,12 @@ import os
 # plt.imshow(img, aspect='auto', origin='lower')
 # plt.show()
 
-f = open('/home/ian/Documents/GREAT03/0/subfield_offset-000.txt', 'r')
-fileHeader = f.readline()
-offsets = f.readline().split()
-print float(offsets[0])
+# f = open('/home/ian/Documents/GREAT03/0/subfield_offset-000.txt', 'r')
+# fileHeader = f.readline()
+# offsets = f.readline().split()
+# print float(offsets[0])
+
+print 'pufta'
 
 
 # x = np.linspace(0, 2*np.pi, 100)
