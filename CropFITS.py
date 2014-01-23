@@ -9,7 +9,7 @@ ImOrig = FitsHDU[0].data
 FitsHeader = FitsHDU[0].header
 
 #Crop the image
-Im = ImOrig[0:200, 0:200]
+Im = ImOrig[0:200, 4600:4800]
 FitsHDU[0].data = Im
 
 #Write it to a new file
