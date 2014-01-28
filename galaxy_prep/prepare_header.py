@@ -40,12 +40,14 @@ prihdr.set('RADECSYS', 'FK5     ')
 prihdr.set('CRVAL1', 3.450000000E+01)
 prihdr.set('CRVAL2', -7.000000000E+00)
 
+# GET THE ORIGINAL CRPIX VALUES AND APPEND DITHER AND OFFSET VALUES
 crpix1 = prihdr['CRPIX1']
 crpix2 = prihdr['CRPIX2']
 
 prihdr.set('CRPIX1', crpix1 + offsets[0] + dither[0])
 prihdr.set('CRPIX2', crpix2 + offsets[1] + dither[1])
 
+# GET THE GS_SCALE AND CONVERT TO RA/DEC BASED ON THE PIXEL SCALE
 gs_scale = prihdr['GS_SCALE']
 cd_value = gs_scale/3600
 
