@@ -4,7 +4,7 @@ import pyfits
 
 # LOAD THE OFFSET VALUES
 f = open('/home/ian/Documents/GREAT03/0/subfield_offset-000.txt', 'r')
-fileHeader = f.readline()
+file_header = f.readline()
 offsets = f.readline().split()
 offsets[0] = float(offsets[0])
 offsets[1] = float(offsets[1])
@@ -12,7 +12,7 @@ f.close()
 
 # LOAD THE DITHER VALUES
 f = open('/home/ian/Documents/GREAT03/0/epoch_dither-000-0.txt', 'r')
-fileHeader = f.readline()
+file_header = f.readline()
 dither = f.readline().split()
 dither[0] = float(dither[0])
 dither[1] = float(dither[1])
