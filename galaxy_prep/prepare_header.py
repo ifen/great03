@@ -40,13 +40,19 @@ prihdr.set('RADECSYS', 'FK5     ')
 prihdr.set('CRVAL1', 3.450000000E+01)
 prihdr.set('CRVAL2', -7.000000000E+00)
 
-prihdr.set('CRPIX1', offsets[0])
-prihdr.set('CRPIX2', offsets[1])
+crpix1 = prihdr['CRPIX1']
+crpix2 = prihdr['CRPIX2']
 
-prihdr.set('CD1_1', -5.166666667E-05)
+prihdr.set('CRPIX1', crpix1 + offsets[0] + dither[0])
+prihdr.set('CRPIX2', crpix2 + offsets[1] + dither[1])
+
+gs_scale = prihdr['GS_SCALE']
+cd_value = gs_scale/3600
+
+prihdr.set('CD1_1', -cd_value)
 prihdr.set('CD1_2', 0.0000000000000)
 prihdr.set('CD2_1', 0.0000000000000)
-prihdr.set('CD2_2', 5.166666667E-05)
+prihdr.set('CD2_2', +cd_value)
 
 prihdr.set('PV1_0', 0.0000000000000)
 prihdr.set('PV1_1', 1.0000000000000)
