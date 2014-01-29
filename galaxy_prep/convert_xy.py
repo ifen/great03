@@ -7,7 +7,7 @@ import pyfits
 
 # PERFORM THE FILE CONVERSION USING XYTOSKY MODULE
 sys.stdout = open(os.devnull, "w")
-output = xyConv.XYtoSky_pars('/home/ian/Documents/GREAT03/0/out/image-000-0X.fits[0]', None, None, '/home/ian/Documents/GREAT03/0/galaxy_catalog-000.fits', 'x,y', xyConv.yes, 'IDCTAB', xyConv.no, None, xyConv.no)
+output = xyConv.XYtoSky_pars('/home/ian/Documents/GREAT03/0/out/image-000-0X.fits[0]', None, None, '/home/ian/Documents/GREAT03/0/out/galaxy_catalog-000-X.fits', 'x,y', xyConv.yes, 'IDCTAB', xyConv.no, None, xyConv.no)
 sys.stdout = sys.__stdout__
 
 # LOAD AND SAVE THE G03 GALAXY IDS
