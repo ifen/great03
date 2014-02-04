@@ -10,6 +10,70 @@ import pydrizzle.xytosky as converter
 import sys
 import os
 
+from galaxy_prep.convert_xy import *
+
+convert('/home/ian/Documents/GREAT03/0/out/image-000-0X.fits[0]',
+        '/home/ian/Documents/GREAT03/0/galaxy_catalog-000.fits',
+        '/home/ian/Documents/GREAT03/0/out/image-000-0X.asc')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # hdulist = pyfits.open('/home/ian/Documents/GREAT03/sample/sample_image.fits')
 # prihdr = hdulist[0].header
 # prihdr.set('CTYPE1', 'RA---TAN')
@@ -68,9 +132,6 @@ import os
 # fileHeader = f.readline()
 # offsets = f.readline().split()
 # print float(offsets[0])
-
-print 'pufta'
-
 
 # x = np.linspace(0, 2*np.pi, 100)
 # y = np.sin(x)
