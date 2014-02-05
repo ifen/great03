@@ -29,7 +29,7 @@ def convert(fits_path, catalogue_path, asc_path):
         id_data.append(tableData[2])
 
     for RA, DEC, ID in zip(output[0], output[1], id_data):
-        f.write("%f %f 22.0 %d\n" % (RA, DEC, ID))
+        f.write("%f %f 25.0 %d\n" % (RA, DEC, ID))
 
     f.close()
 

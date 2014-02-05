@@ -49,6 +49,8 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
     prihdr.set('CRVAL1', 3.450000000E+01)
     prihdr.set('CRVAL2', -7.000000000E+00)
 
+    prihdr.set('EQUINOX', 2000.0000)
+
     # GET THE ORIGINAL CRPIX VALUES AND APPEND DITHER AND OFFSET VALUES
     crpix1 = prihdr['CRPIX1']
     crpix2 = prihdr['CRPIX2']
