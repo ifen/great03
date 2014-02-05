@@ -2,14 +2,16 @@ __author__ = 'Ian Fenech Conti'
 
 import pyfits
 
-# LOAD AND SAVE THE G03 GALAXY IDS
-f = open('/home/ian/Documents/GREAT03/0/out/image-000-0X.head', 'w')
+def write_headfile(path_headfile, path_image):
 
-hdulist = pyfits.open('/home/ian/Documents/GREAT03/0/out/image-000-0X.fits')
-prihdr = hdulist[0].header
+    # LOAD AND SAVE THE G03 GALAXY IDS
+    f = open(path_headfile, 'w')
 
-for header_info in prihdr.cards:
-    f.write(header_info.cardimage + "\n")
+    hdulist = pyfits.open(path_image)
+    prihdr = hdulist[0].header
 
-f.close()
+    for header_info in prihdr.cards:
+        f.write(header_info.cardimage + "\n")
+
+    f.close()
 

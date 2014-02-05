@@ -13,6 +13,7 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
 
     # LOAD THE OFFSET VALUES
     f = open(offset_path, 'r')
+    offsets = f.readline()
     offsets = f.readline().split()
     offsets[0] = float(offsets[0])
     offsets[1] = float(offsets[1])
@@ -20,6 +21,7 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
 
     # LOAD THE DITHER VALUES
     f = open(dither_path, 'r')
+    dither = f.readline()
     dither = f.readline().split()
     dither[0] = float(dither[0])
     dither[1] = float(dither[1])
