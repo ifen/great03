@@ -31,6 +31,8 @@ crpix2 = prihdr['CRPIX2']
 prihdr.set('CRPIX1', crpix1)
 prihdr.set('CRPIX2', crpix2)
 
+prihdr.set('EQUINOX', 2000.0000)
+
 # GET THE GS_SCALE AND CONVERT TO RA/DEC BASED ON THE PIXEL SCALE
 gs_scale = prihdr['GS_SCALE']
 cd_value = gs_scale/3600
@@ -66,5 +68,5 @@ prihdr.update('CUNIT1', 'deg     ')
 prihdr.update('CUNIT2', 'deg     ')
 
 # DUMP DATA TO FILE
-hdulist.writeto('/home/ian/Documents/GREAT03/0/out/starfieldimage-000-0X.fits')
+hdulist.writeto('/home/ian/Documents/GREAT03/0/out/starfield_crop.fits')
 hdulist.close()

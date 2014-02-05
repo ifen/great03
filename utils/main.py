@@ -31,5 +31,5 @@ convert(path_new,
 
 os.chdir("/home/ian/Documents/GREAT03/0/out/")
 os.system("./psfimage2coeffs "
-          "/home/ian/Documents/GREAT03/0/starfield_crop-000-0X.fits "
+          "/home/ian/Documents/GREAT03/0/out/starfield_crop.fits "
           "%s" % path_coeff)
