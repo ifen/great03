@@ -26,7 +26,7 @@ set_tabledata(path_catalogue,
 write_headfile(path_headfile, path_save)
 
 convert(path_new,
-        path_catalogue,
+        path_catalogue_deg,
         path_asc)
 
 os.chdir("/home/ian/Documents/GREAT03/0/out/")
