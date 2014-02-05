@@ -30,6 +30,6 @@ convert(path_new,
         path_asc)
 
 os.chdir("/home/ian/Documents/GREAT03/0/out/")
-os.system("./coeff "
+os.system("./psfimage2coeffs "
           "/home/ian/Documents/GREAT03/0/starfield_crop-000-0X.fits "
           "%s" % path_coeff)
