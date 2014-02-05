@@ -10,14 +10,6 @@ import pydrizzle.xytosky as converter
 import sys
 import os
 
-from galaxy_prep.convert_xy import *
-
-convert('/home/ian/Documents/GREAT03/0/out/image-000-0X.fits[0]',
-        '/home/ian/Documents/GREAT03/0/galaxy_catalog-000.fits',
-        '/home/ian/Documents/GREAT03/0/out/image-000-0X.asc')
-
-
-
 
 
 
