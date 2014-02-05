@@ -7,7 +7,7 @@ from galaxy_prep.write_headfile import *
 
 path_original = '/home/ian/Documents/GREAT03/0/image-000-0.fits'
 path_save = '/home/ian/Documents/GREAT03/0/out/image0.fits'
-path_coeff = '/home/ian/Documents/GREAT03/0/out/image0.coeff.fits'
+path_coeff = '/home/ian/Documents/GREAT03/0/out/image0.psfcoeffs.fits'
 path_dither = '/home/ian/Documents/GREAT03/0/epoch_dither-000-0.txt'
 path_offsets = '/home/ian/Documents/GREAT03/0/subfield_offset-000.txt'
 path_new = '/home/ian/Documents/GREAT03/0/out/image0.fits[0]'
