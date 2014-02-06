@@ -10,7 +10,7 @@ prihdr = hdulist[0].header
 
 # OVERWRITE EXISTING VALUES
 prihdr.set('CTYPE1', 'RA---TAN')
-prihdr.set('CTYPE2', 'DEC---TAN')
+prihdr.set('CTYPE2', 'DEC--TAN')
 
 # APPEND NEW KEYS TO HEADER FOR XYCONVERSIONS
 prihdr.update('EXPTIME', 21600.)
@@ -21,8 +21,8 @@ prihdr.update('PHOTFLAM', 0.000000)
 # APPEND ADDITIONAL LENSFIT PARAMATERS
 prihdr.set('RADECSYS', 'FK5     ')
 
-prihdr.set('CRVAL1', 3.450000000E+01)
-prihdr.set('CRVAL2', -7.000000000E+00)
+prihdr.set('CRVAL1', 0)
+prihdr.set('CRVAL2', 0)
 
 # GET THE ORIGINAL CRPIX VALUES AND APPEND DITHER AND OFFSET VALUES
 crpix1 = prihdr['CRPIX1']
@@ -68,5 +68,5 @@ prihdr.update('CUNIT1', 'deg     ')
 prihdr.update('CUNIT2', 'deg     ')
 
 # DUMP DATA TO FILE
-hdulist.writeto('/home/ian/Documents/GREAT03/0/out/starfield_crop.fits')
+hdulist.writeto('/home/ian/Documents/GREAT03/0/out/starfield_crop_whole.fits')
 hdulist.close()

@@ -35,7 +35,7 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
 
     # OVERWRITE EXISTING VALUES
     prihdr.set('CTYPE1', 'RA---TAN')
-    prihdr.set('CTYPE2', 'DEC---TAN')
+    prihdr.set('CTYPE2', 'DEC--TAN')
 
     # APPEND NEW KEYS TO HEADER FOR XYCONVERSIONS
     prihdr.update('EXPTIME', 21600.)
@@ -55,8 +55,11 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
     crpix1 = prihdr['CRPIX1']
     crpix2 = prihdr['CRPIX2']
 
-    prihdr.set('CRPIX1', crpix1 + offsets[0] + dither[0])
-    prihdr.set('CRPIX2', crpix2 + offsets[1] + dither[1])
+    #prihdr.set('CRPIX1', crpix1 + offsets[0] + dither[0])
+    #prihdr.set('CRPIX2', crpix2 + offsets[1] + dither[1])
+
+    prihdr.set('CRPIX1', 2400)
+    prihdr.set('CRPIX2', 2400)
 
     # GET THE GS_SCALE AND CONVERT TO RA/DEC BASED ON THE PIXEL SCALE
     gs_scale = prihdr['GS_SCALE']
