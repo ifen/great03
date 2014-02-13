@@ -11,9 +11,10 @@ import sys
 import os
 
 
-from galaxy_prep.pad_image import *
+from galaxy_prep.package_results import *
 
-pad_image('/home/ian/Documents/GREAT03/0/image-000-0.fits', '/home/ian/Documents/GREAT03/0/out/imagetest.pad.fits', 10)
+package_results('/home/ian/Documents/GREAT03/0/out/OUTPUT_STANDARD.asc',
+                '/home/ian/Documents/GREAT03/0/out/OUTPUT_CELESTIAL_DISTORTION.asc')
 
 
 

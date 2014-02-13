@@ -15,8 +15,8 @@ def pad_image(original_path, save_path, pad_size):
 
     new_image[pad_size:pad_size+image_size, pad_size:pad_size+image_size] = image_data
 
-    # plt.imshow(new_image, aspect='auto', origin='lower')
-    # plt.show()
+    #plt.imshow(new_image, aspect='auto', origin='lower')
+    #plt.show()
 
     fits_hdu[0].data = new_image
     fits_hdu.writeto(save_path)
