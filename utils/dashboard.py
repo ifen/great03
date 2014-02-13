@@ -11,7 +11,9 @@ import sys
 import os
 
 
+from galaxy_prep.pad_image import *
 
+pad_image('/home/ian/Documents/GREAT03/0/image-000-0.fits', '/home/ian/Documents/GREAT03/0/out/imagetest.pad.fits', 10)
 
 
 
