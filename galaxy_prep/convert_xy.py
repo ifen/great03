@@ -6,7 +6,7 @@ import pydrizzle.xytosky as xy_conv
 import pyfits
 
 
-def convert(fits_path, catalogue_path, asc_path):
+def convert(fits_path, catalogue_path, asc_path, use_g3id):
     # PERFORM THE FILE CONVERSION USING XYTOSKY MODULE
     sys.stdout = open(os.devnull, "w")
     output = xy_conv.XYtoSky_pars(fits_path,
@@ -28,8 +28,14 @@ def convert(fits_path, catalogue_path, asc_path):
     for (counter, tableData) in enumerate(tb_data.base):
         id_data.append(tableData[2])
 
+    galaxy_id = 0
     for RA, DEC, ID in zip(output[0], output[1], id_data):
-        f.write("%f %f 23.0 %d\n" % (RA, DEC, ID))
+        if use_g3id:
+            f.write("%f %f 23.0 %d\n" % (RA, DEC, ID))
+        else:
+            f.write("%f %f 23.0 %d\n" % (RA, DEC, galaxy_id))
+            galaxy_id += 1
+
 
     f.close()
 

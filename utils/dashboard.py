@@ -13,9 +13,11 @@ import os
 
 from galaxy_prep.package_results import *
 
-package_results('/home/ian/Documents/GREAT03/0/out/OUTPUT_STANDARD.asc',
-                '/home/ian/Documents/GREAT03/0/out/OUTPUT_CELESTIAL_DISTORTION.asc')
+# compare_outputs('/home/ian/Documents/GREAT03/0/out/OUTPUT_STANDARD.asc',
+#                 '/home/ian/Documents/GREAT03/0/out/OUTPUT_CELESTIAL_DISTORTION.asc')
 
+plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT.asc',
+               'E1', 'E2')
 
 
 
