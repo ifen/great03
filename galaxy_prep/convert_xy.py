@@ -36,6 +36,11 @@ def convert(fits_path, catalogue_path, asc_path, use_g3id):
             f.write("%f %f 23.0 %d\n" % (RA, DEC, galaxy_id))
             galaxy_id += 1
 
-
     f.close()
+
+def write_imagefile(imagefile_path, image_name):
+    f = open(imagefile_path, 'w')
+    f.write(image_name + '\n')
+    f.close()
+
 

@@ -10,16 +10,17 @@ import pydrizzle.xytosky as converter
 import sys
 import os
 
-
 from galaxy_prep.package_results import *
 
 # compare_outputs('/home/ian/Documents/GREAT03/0/out/OUTPUT_STANDARD.asc',
 #                 '/home/ian/Documents/GREAT03/0/out/OUTPUT_CELESTIAL_DISTORTION.asc')
 
-plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT.asc',
-               'E1', 'E2')
-
-
+# plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT_FIXED2.asc',
+#                'SCALE_LENGTH', 'MEAN_LIKELIHOOD_E')
+# plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT_FIXED2.asc',
+#                'MODEL_SN_RATIO', 'SCALE_LENGTH')
+# plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT_FIXED2.asc',
+#                'MODEL_SN_RATIO', 'BULGE_FRACTION')
 
 
 

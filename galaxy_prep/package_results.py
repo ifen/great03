@@ -76,6 +76,7 @@ def plot_results(x_value, y_value, x_title, y_title):
     plt.xlabel(x_title)
     plt.ylabel(y_title)
     plt.title('Lensfit Analysis')
+    plt.ion()
     plt.show()
 
 
