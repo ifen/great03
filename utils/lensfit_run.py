@@ -15,15 +15,15 @@ import datetime
 great3_folder_root = '/home/ian/Documents/GREAT03/'
 lensfit_folder_root = '/home/ian/Documents/LENSFIT/'
 
-# SET BRANCH FOLDER
+# SET BRANCH FOLDER AND BRANCH TYPE
 great3_branch = '0/'
 great3_branch = great3_folder_root + great3_branch
+great3_branch_type = 'standard/'
+great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
-great3_prep = 'standard/prep/'
-great3_prep = great3_branch + great3_prep
-great3_out = 'standard/out/'
-great3_out = great3_branch + great3_out
+great3_prep = great3_branch_type + 'prep/'
+great3_out = great3_branch_type + 'out/'
 
 # SET LENSIFT SOURCE FOLDER
 lensfit_source = lensfit_folder_root + 'src/'
@@ -89,6 +89,22 @@ envdata_psfdir = great3_prep
 envdata_cataloguedir = path_catalogue_deg_asc
 envdata_swarpconfig = lensfit_folder_root + path_swarp
 
+# FILE HANDLING
+if not os.path.isdir(great3_branch_type):
+    print 'prep dir does not exist\n'
+    print 'creating prep dir\n'
+    os.makedirs(great3_prep)
+
+if not os.path.isdir(great3_prep):
+    print 'prep dir does not exist\n'
+    print 'creating prep dir\n'
+    os.makedirs(great3_prep)
+
+if not os.path.isdir(great3_prep):
+    print 'out dir does not exist\n'
+    print 'creating out dir\n'
+    os.makedirs(great3_out)
+
 # START THE CONVERSION CODE
 
 # remove the previous prep. data from the
@@ -96,40 +112,40 @@ envdata_swarpconfig = lensfit_folder_root + path_swarp
 os.chdir(great3_prep)
 os.system('rm -rf *')
 
-#crop the perfectly centered PSF from the starfield
-#postagestamp and save it.
+# crop the perfectly centered PSF from the starfield
+# postagestamp and save it.
 crop_psf(path_original_starfield,
          path_save_starfield,
          crop_size)
 
-#pad the image in order to cater for galaxies on the
-#edges. padding will be 0 values.
+# pad the image in order to cater for galaxies on the
+# edges. padding will be 0 values.
 pad_image(path_original, path_padded, pad_size)
 
-#prepare header with the correct WCS values
+# prepare header with the correct WCS values
 prepare_header(path_offsets, path_dither,
                path_padded, path_save)
 
-#re-write the table data to match centroid
-#this caters for the G3 conventions
+# re-write the table data to match centroid
+# this caters for the G3 conventions
 set_tabledata(path_catalogue,
               path_catalogue_deg, pad_size)
 
-#write lensift's .head file with WCS props.
+# write lensift's .head file with WCS props.
 write_headfile(path_headfile, path_save)
 
-#convert cords. from pixel to dec/ra and save.
+# convert cords. from pixel to dec/ra and save.
 convert(path_new,
         path_catalogue_deg,
         path_asc,
         True)
 
-#write the acii file with the image name.
+# write the acii file with the image name.
 write_imagefile(path_imagefilelist,
                 image_name)
 
 
-#DEBUGGING THE FILENAMES/ EXEC PATHS
+# DEBUGGING THE FILENAMES/ EXEC PATHS
 print 'debugging args\n'
 print lensfit_args
 print readlensfit_args
@@ -142,10 +158,10 @@ print envdata_psfdir
 print envdata_cataloguedir
 print envdata_swarpconfig
 
-#RUN LENSFIT
+# RUN LENSFIT
 print '\n\npreparing to start lensfit\n'
 
-os.chdir(great3_folder_root+'/utils/')
+os.chdir(great3_folder_root + '/utils/')
 os.system(psfcoeff_args)
 
 os.chdir(lensfit_source)
@@ -158,10 +174,10 @@ os.environ['DATA_DIR'] = envdata_datadir
 
 os.system(lensfit_args)
 
-#CONVERT OUTPUTS TO ASCII TABLE
+# CONVERT OUTPUTS TO ASCII TABLE
 os.system(readlensfit_args)
 
-#PLOT THE RESULTS FOR ANALYSIS
+# PLOT THE RESULTS FOR ANALYSIS
 plot_attribute(args_output_read,
                'SCALE_LENGTH', 'MEAN_LIKELIHOOD_E')
 plot_attribute(args_output_read,
