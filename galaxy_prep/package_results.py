@@ -30,7 +30,7 @@ PARAMS = {'WSC_X': 0,
           'N_EXPOSURES': 21,
           'CAT_ID': 22}
 
-def plot_attribute(output_path, attribute_1, attribute_2):
+def plot_attribute(output_path, attribute_1, attribute_2, save_path):
     data_table = load_datatable(output_path, True)
     attribute_1_data = extract_parameter(PARAMS[attribute_1], data_table)
     attribute_2_data = extract_parameter(PARAMS[attribute_2], data_table)
@@ -38,7 +38,8 @@ def plot_attribute(output_path, attribute_1, attribute_2):
     plot_results([val[0] for val in attribute_1_data],
                  [val[0] for val in attribute_2_data],
                  attribute_1,
-                 attribute_2)
+                 attribute_2,
+                 save_path)
 
 def compare_outputs(output_1, output_2):
     lensfit_standard = load_datatable(output_1, True)
@@ -50,7 +51,8 @@ def compare_outputs(output_1, output_2):
     plot_results([val[0] for val in lensfit_standard_e1],
                  [val[0] for val in lensfit_celestial_e1],
                  'Correct Distortion : 1 (e2)',
-                 'Correct Distortion : 0 (e2)')
+                 'Correct Distortion : 0 (e2)',
+                 '')
 
 def load_datatable(output_path, exclude_failed):
     data_table = np.genfromtxt(output_path, dtype=None)
@@ -70,13 +72,17 @@ def extract_parameter(paramater, data_table):
 
     return filtered_results
 
-def plot_results(x_value, y_value, x_title, y_title):
+def plot_results(x_value, y_value, x_title, y_title, save_path):
     plt.figure()
     plt.plot(x_value, y_value, 'bo', markersize=0.8)
     plt.xlabel(x_title)
     plt.ylabel(y_title)
     plt.title('Lensfit Analysis')
-    plt.ion()
-    plt.show()
+    if save_path:
+        fig_path = save_path + ' ' + x_title + '_v_' + y_title + '.png'
+        print 'saving plot ' + fig_path
+        plt.savefig(fig_path)
+    else:
+        plt.draw()
 
 
