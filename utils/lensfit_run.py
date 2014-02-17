@@ -8,7 +8,6 @@ from galaxy_prep.pad_image import *
 from galaxy_prep.package_results import *
 from star_prep.crop_psf import *
 
-
 import os
 import datetime
 
