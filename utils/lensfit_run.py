@@ -1,5 +1,3 @@
-from stsci.tools.swapgeis import dat
-
 __author__ = 'Ian Fenech Conti'
 
 from galaxy_prep.convert_xy import *
