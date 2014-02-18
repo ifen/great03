@@ -2,6 +2,11 @@ __author__ = 'Ian Fenech Conti'
 
 import numpy as np
 import matplotlib.pyplot as plt
+import smtplib
+import os
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
 
 # ------------------------------------
 # defining the results file paramaters
@@ -35,11 +40,13 @@ def plot_attribute(output_path, attribute_1, attribute_2, save_path):
     attribute_1_data = extract_parameter(PARAMS[attribute_1], data_table)
     attribute_2_data = extract_parameter(PARAMS[attribute_2], data_table)
 
-    plot_results([val[0] for val in attribute_1_data],
-                 [val[0] for val in attribute_2_data],
-                 attribute_1,
-                 attribute_2,
-                 save_path)
+    path = plot_results([val[0] for val in attribute_1_data],
+        [val[0] for val in attribute_2_data],
+        attribute_1,
+        attribute_2,
+        save_path)
+
+    return path
 
 def compare_outputs(output_1, output_2):
     lensfit_standard = load_datatable(output_1, True)
@@ -59,10 +66,20 @@ def load_datatable(output_path, exclude_failed):
     filtered_results = []
 
     for data_entry in data_table:
-        if data_entry[PARAMS['FIT_CLASS']] != exclude_failed:
+        if data_entry[PARAMS['FIT_CLASS']] > -1:
             filtered_results.append(data_entry)
 
     return filtered_results
+
+def processed_galaxies(output_path):
+    data_table = np.genfromtxt(output_path, dtype=None)
+
+    count = 0
+    for data_entry in data_table:
+        if data_entry[PARAMS['FIT_CLASS']] > -1:
+            count += 1
+
+    return count
 
 def extract_parameter(paramater, data_table):
     filtered_results = []
@@ -82,7 +99,37 @@ def plot_results(x_value, y_value, x_title, y_title, save_path):
         fig_path = save_path + ' ' + x_title + '_v_' + y_title + '.png'
         print 'saving plot ' + fig_path
         plt.savefig(fig_path)
+        return fig_path
     else:
         plt.draw()
 
+def email_results(subject, add_to, add_from, content, image_paths):
+
+    msg = MIMEMultipart()
+    msg['Subject'] = subject
+    msg['From'] = add_to
+    msg['To'] = add_from
+
+    text = MIMEText(content, 'html')
+    msg.attach(text)
+
+    for image_path in image_paths:
+        image = get_image_data(image_path)
+        image_attachment = MIMEImage(image, name=os.path.basename(image_path))
+        msg.attach(image_attachment)
+
+    config_file = open('/home/ian/Documents/GREAT03/utils/email_settings.config', 'r')
+    config_contents = config_file.readline()
+
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.ehlo()
+    s.starttls()
+    s.ehlo()
+    s.login('ianfc89@gmail.com', config_contents)
+    s.sendmail(add_from, add_to, msg.as_string())
+    s.quit()
+
+
+def get_image_data(img_path):
+    return open(img_path, 'rb').read()
 

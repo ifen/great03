@@ -10,12 +10,16 @@ from star_prep.crop_psf import *
 
 import os
 import datetime
+import time
 
 # DEFINE RUNTIME PROCEDURES
-file_handling = True
-lensfit_run = True
-lensfit_read = True
+file_handling = False
+lensfit_run = False
+lensfit_read = False
 run_plots = True
+
+# START TIMER
+time_start = time.time()
 
 # SET ROOT PATHS FOR G3 AND LENSFIT
 great3_folder_root = '/home/ian/Documents/GREAT03/'
@@ -49,12 +53,12 @@ path_dither = great3_branch + 'deep_epoch_dither-000-0.txt'
 path_offsets = great3_branch + 'deep_subfield_offset-000.txt'
 path_catalogue = great3_branch + 'deep_galaxy_catalog-000.fits'
 path_original_starfield = great3_branch + 'deep_starfield_image-000-0.fits'
-path_original = great3_branch + 'deep_starfield_image-000-0.fits'
+path_original = great3_branch + 'deep_image-000-0.fits'
 
 # DEFINE ITEM NAMES TO SAVE
-image_name = 'fond0'
-catalogue_name = 'cat_fond0'
-starfield_name = 'fond_star0'
+image_name = 'image0'
+catalogue_name = 'catalog0'
+starfield_name = 'starfield0'
 
 # SET SAVE PATHS FOR PREP. ITEMS
 path_padded = great3_prep + image_name + '.pad.fits'
@@ -191,18 +195,46 @@ if lensfit_read:
 if run_plots:
     # PLOT THE RESULTS FOR ANALYSIS
     results_path = args_output_read
+    # results_path = '/home/ian/Documents/GREAT03/0/deep/out/output.17.02.14.09.12.12.asc'
 
     plot_path = great3_out+date_time_string + '/'
     os.makedirs(plot_path)
 
-    plot_attribute(results_path,
+    path_1 = plot_attribute(results_path,
                    'E1', 'E2', plot_path)
-    plot_attribute(results_path,
+    path_2 = plot_attribute(results_path,
                    'SCALE_LENGTH', 'MEAN_LIKELIHOOD_E', plot_path)
-    plot_attribute(results_path,
+    path_3 = plot_attribute(results_path,
                    'MODEL_SN_RATIO', 'SCALE_LENGTH', plot_path)
-    plot_attribute(results_path,
+    path_4 = plot_attribute(results_path,
                    'MODEL_SN_RATIO', 'BULGE_FRACTION', plot_path)
+
+    proc_galaxies = processed_galaxies(results_path)
 
     # plt.show()
     # raw_input("Press Enter to close...")
+
+# END TIMER
+time_end = time.time()
+time_length = time_end - time_start
+
+m, s = divmod(time_length, 60)
+h, m = divmod(m, 60)
+run_time = "%d:%02d:%d" % (h, m, s)
+
+# body_of_email can be plaintext or html!
+content = "\r\n\r\n" + 'Dear Ian, <br /><br />'  \
+          'Your Lensfit Run Has Completed with ID (' + date_time_string + ').<br />' \
+          'No. Processed Galaxies : ' + str(proc_galaxies) + '<br />' \
+          'Execution Time Was : ' + run_time + '<br /><br />' \
+          'Best Regards,<br /><br />Lensfit Bot'
+
+email_results('Lensifit Run (' + date_time_string + ') Complete',
+              'ianfc89@gmail.com',
+              'ianfc89@gmail.com',
+              content,
+              [path_1,
+              path_2,
+              path_3,
+              path_4])
+
