@@ -3,6 +3,7 @@ __author__ = 'Ian Fenech Conti'
 import pyfits
 from pylab import *
 
+
 def crop_psf(path_original, path_save, crop_size):
 
     fits_hdu = pyfits.open(path_original)

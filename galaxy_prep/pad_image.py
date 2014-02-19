@@ -4,6 +4,7 @@ import pyfits
 import numpy
 from pylab import *
 
+
 def pad_image(original_path, save_path, pad_size):
     fits_hdu = pyfits.open(original_path)
     image_data = fits_hdu[0].data

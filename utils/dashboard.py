@@ -23,10 +23,10 @@ from galaxy_prep.tile_image import *
 # plot_attribute('/home/ian/Documents/GREAT03/0/deep/OUTPUT_FIXED2.asc',
 #                'MODEL_SN_RATIO', 'BULGE_FRACTION')
 
-path_image = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_1_0/prep/image0.fits'
-path_tile = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_1_0/prep/tiles/'
-
-print tile_image(path_image, path_tile, 'ground')
+# path_image = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_1_0/prep/image0.fits'
+# path_tile = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_1_0/prep/tiles/'
+#
+# print tile_image(path_image, path_tile, 'ground')
 
 
 

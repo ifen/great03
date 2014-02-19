@@ -5,6 +5,7 @@ import os
 
 from pylab import *
 
+
 def tile_image(image_path,
                save_folder,
                survey_type):
@@ -24,6 +25,7 @@ def tile_image(image_path,
     # plt.show()
 
     return tile_paths
+
 
 def prepare_tile(tile_area, tile_index_x, tile_index_y,
                  image_path, save_folder):

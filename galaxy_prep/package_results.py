@@ -35,6 +35,7 @@ PARAMS = {'WSC_X': 0,
           'N_EXPOSURES': 21,
           'CAT_ID': 22}
 
+
 def plot_attribute(output_path, attribute_1, attribute_2, save_path):
     data_table = load_datatable(output_path, True)
     attribute_1_data = extract_parameter(PARAMS[attribute_1], data_table)
@@ -47,6 +48,7 @@ def plot_attribute(output_path, attribute_1, attribute_2, save_path):
         save_path)
 
     return path
+
 
 def compare_outputs(output_1, output_2):
     lensfit_standard = load_datatable(output_1, True)
@@ -61,6 +63,7 @@ def compare_outputs(output_1, output_2):
                  'Correct Distortion : 0 (e2)',
                  '')
 
+
 def load_datatable(output_path, exclude_failed):
     data_table = np.genfromtxt(output_path, dtype=None)
     filtered_results = []
@@ -70,6 +73,7 @@ def load_datatable(output_path, exclude_failed):
             filtered_results.append(data_entry)
 
     return filtered_results
+
 
 def processed_galaxies(output_path):
     data_table = np.genfromtxt(output_path, dtype=None)
@@ -81,6 +85,7 @@ def processed_galaxies(output_path):
 
     return count
 
+
 def extract_parameter(paramater, data_table):
     filtered_results = []
     for data_entry in data_table:
@@ -88,6 +93,7 @@ def extract_parameter(paramater, data_table):
                                  data_entry[PARAMS['CAT_ID']]])
 
     return filtered_results
+
 
 def plot_results(x_value, y_value, x_title, y_title, save_path):
     plt.figure()
@@ -102,6 +108,7 @@ def plot_results(x_value, y_value, x_title, y_title, save_path):
         return fig_path
     else:
         plt.draw()
+
 
 def email_results(subject, add_to, add_from, content, image_paths):
 

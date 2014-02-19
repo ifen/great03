@@ -2,6 +2,7 @@ __author__ = 'Ian Fenech Conti'
 
 import pyfits
 
+
 def prepare_header(offset_path, dither_path, original_path, save_path):
 
     """

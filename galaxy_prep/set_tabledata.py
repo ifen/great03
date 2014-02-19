@@ -2,6 +2,7 @@ __author__ = 'Ian Fenech Conti'
 
 import pyfits
 
+
 def set_tabledata(path_cat_pixel, path_cat_deg, pad_size):
 
     f = pyfits.open(path_cat_pixel)
