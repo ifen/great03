@@ -15,7 +15,6 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-# ------------------------------------
 # defining the results file paramaters
 PARAMS = {'WSC_X': 0,
           'WSC_Y': 1,

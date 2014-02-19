@@ -14,11 +14,11 @@ import datetime
 import time
 
 # DEFINE RUNTIME PROCEDURES
-file_handling = True
-lensfit_run = True
-exec_run = True
-lensfit_read = True
-run_plots = True
+file_handling = 1
+lensfit_run = 1
+exec_run = 1
+lensfit_read = 1
+run_plots = 1
 
 # START TIMER
 time_start = time.time()
@@ -28,9 +28,9 @@ great3_folder_root = '/home/ian/Documents/GREAT03/'
 lensfit_folder_root = '/home/ian/Documents/LENSFIT/'
 
 # SET BRANCH FOLDER AND BRANCH TYPE
-great3_branch = 'variable_psf/ground/constant/'
+great3_branch = '0/'
 great3_branch = great3_folder_root + great3_branch
-great3_branch_type = '000/data_test_tiled/'
+great3_branch_type = 'standard_non_tiled/'
 great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
@@ -80,7 +80,7 @@ path_imagefilelist = great3_prep + args_input_name
 # DEFINE RUNTIME PARAMATERS
 pad_size = 0
 crop_size = 48
-use_tiles = 1
+use_tiles = 0
 
 # BUILD PSF COEFF EXEC
 psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
