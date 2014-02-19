@@ -1,5 +1,12 @@
 __author__ = 'Ian Fenech Conti'
 
+"""
+GREAT3 - Results Packaging.
+
+This code is responsible for handling the lensift results interpretation,
+which will be used for statistical analysis on the outputs.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import smtplib
@@ -10,7 +17,6 @@ from email.mime.multipart import MIMEMultipart
 
 # ------------------------------------
 # defining the results file paramaters
-
 PARAMS = {'WSC_X': 0,
           'WSC_Y': 1,
           'E1': 2,
@@ -37,6 +43,17 @@ PARAMS = {'WSC_X': 0,
 
 
 def plot_attribute(output_path, attribute_1, attribute_2, save_path):
+
+    """
+    @param output_path: The path to the output file where results are
+    stored.
+    @param attribute_1: The attribute to be plot on the X-axis.
+    @param attribute_2: The attribute to be plot on the Y-axis.
+    @param save_path: The dir. path to the folder where the plots will
+    be svaed
+    @return: returns the path of the plot that was saved.
+    """
+
     data_table = load_datatable(output_path, True)
     attribute_1_data = extract_parameter(PARAMS[attribute_1], data_table)
     attribute_2_data = extract_parameter(PARAMS[attribute_2], data_table)
@@ -51,6 +68,12 @@ def plot_attribute(output_path, attribute_1, attribute_2, save_path):
 
 
 def compare_outputs(output_1, output_2):
+
+    """
+    @param output_1: The X-value to be compared.
+    @param output_2: The Y-value to be compared.
+    """
+
     lensfit_standard = load_datatable(output_1, True)
     lensfit_celestial = load_datatable(output_2, True)
 
@@ -65,6 +88,14 @@ def compare_outputs(output_1, output_2):
 
 
 def load_datatable(output_path, exclude_failed):
+
+    """
+    @param output_path: Path to output file.
+    @param exclude_failed: Include the galaxies that failed the lensfit
+    fit test.
+    @return: A list of filtered values, read from the lensfit .out file.
+    """
+
     data_table = np.genfromtxt(output_path, dtype=None)
     filtered_results = []
 
@@ -76,6 +107,12 @@ def load_datatable(output_path, exclude_failed):
 
 
 def processed_galaxies(output_path):
+
+    """
+    @param output_path: Path to lensfit out file.
+    @return: The number of galaxies that passed the lensfit fit test.
+    """
+
     data_table = np.genfromtxt(output_path, dtype=None)
 
     count = 0
@@ -87,6 +124,13 @@ def processed_galaxies(output_path):
 
 
 def extract_parameter(paramater, data_table):
+
+    """
+    @param paramater: Extract this paramater from the data_table.
+    @param data_table: A loaded list with lensfit output values.
+    @return: A list of the requested paramater.
+    """
+
     filtered_results = []
     for data_entry in data_table:
         filtered_results.append([data_entry[paramater],
@@ -96,6 +140,16 @@ def extract_parameter(paramater, data_table):
 
 
 def plot_results(x_value, y_value, x_title, y_title, save_path):
+
+    """
+    @param x_value: A List of values to be plot on the X-axis.
+    @param y_value: A list of values to be plot on the Y-axis.
+    @param x_title: A string rep. the X title name.
+    @param y_title: A string rep. the Y title name.
+    @param save_path: Path where the plot is to be saved.
+    @return: A path to where the plot was saved.
+    """
+
     plt.figure()
     plt.plot(x_value, y_value, 'bo', markersize=0.8)
     plt.xlabel(x_title)
@@ -111,6 +165,14 @@ def plot_results(x_value, y_value, x_title, y_title, save_path):
 
 
 def email_results(subject, add_to, add_from, content, image_paths):
+
+    """
+    @param subject: Subject of email.
+    @param add_to: To address of email.
+    @param add_from: From address of email.
+    @param content: Email HTML content.
+    @param image_paths: Paths to image plots to be attached.
+    """
 
     msg = MIMEMultipart()
     msg['Subject'] = subject
@@ -138,5 +200,11 @@ def email_results(subject, add_to, add_from, content, image_paths):
 
 
 def get_image_data(img_path):
+
+    """
+    @param img_path: Path to plot.
+    @return: A binary image of the plot.
+    """
+
     return open(img_path, 'rb').read()
 
