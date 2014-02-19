@@ -15,6 +15,7 @@ def convert(fits_path, catalogue_path, asc_path, use_g3id):
                                  'x,y', xy_conv.yes,
                                  'IDCTAB', xy_conv.no, None,
                                  xy_conv.no)
+    # val = xy_conv.XYtoSky_pars(fits_path, x=23, y=23)
     sys.stdout = sys.__stdout__
 
     # LOAD AND SAVE THE G03 GALAXY IDS
@@ -38,9 +39,5 @@ def convert(fits_path, catalogue_path, asc_path, use_g3id):
 
     f.close()
 
-def write_imagefile(imagefile_path, image_name):
-    f = open(imagefile_path, 'w')
-    f.write(image_name + '\n')
-    f.close()
 
 

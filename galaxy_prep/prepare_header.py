@@ -49,17 +49,20 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
     prihdr.set('CRVAL1', 3.450000000E+01)
     prihdr.set('CRVAL2', -7.000000000E+00)
 
+    # prihdr.set('CRVAL1', 0.000000000E+00)
+    # prihdr.set('CRVAL2', 0.000000000E+00)
+
     prihdr.set('EQUINOX', 2000.0000)
 
     # GET THE ORIGINAL CRPIX VALUES AND APPEND DITHER AND OFFSET VALUES
-    crpix1 = prihdr['CRPIX1']
-    crpix2 = prihdr['CRPIX2']
+    naxis_1 = prihdr['NAXIS1']
+    naxis_2 = prihdr['NAXIS2']
 
     #prihdr.set('CRPIX1', crpix1 + offsets[0] + dither[0])
     #prihdr.set('CRPIX2', crpix2 + offsets[1] + dither[1])
 
-    prihdr.set('CRPIX1', 2400)
-    prihdr.set('CRPIX2', 2400)
+    prihdr.set('CRPIX1', naxis_1/2)
+    prihdr.set('CRPIX2', naxis_2/2)
 
     # GET THE GS_SCALE AND CONVERT TO RA/DEC BASED ON THE PIXEL SCALE
     gs_scale = prihdr['GS_SCALE']
