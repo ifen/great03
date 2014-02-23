@@ -10,8 +10,12 @@ import pydrizzle.xytosky as converter
 import sys
 import os
 
+from decimal import *
+
 from galaxy_prep.package_results import *
 from galaxy_prep.tile_image import *
+
+from star_prep.tiling_handler import *
 
 # compare_outputs('/home/ian/Documents/GREAT03/0/out/OUTPUT_STANDARD.asc',
 #                 '/home/ian/Documents/GREAT03/0/out/OUTPUT_CELESTIAL_DISTORTION.asc')
@@ -28,22 +32,50 @@ from galaxy_prep.tile_image import *
 #
 # print tile_image(path_image, path_tile, 'ground')
 
+catalogue_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/star_catalog-000.fits'
+
+image_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/starfield_image-000-0.fits'
+image_path_save = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.grid.fits'
+
+catalogue_path_save = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.before.grid.asc'
+table_path_save = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.tab.grid.fits'
+
+galaxy_tile_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_tiled/prep/image0-00.tile.fits'
+tiled_image_path = '%s[0]' % galaxy_tile_path
+catalogue_path_true = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.grid.asc'
+
+head_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.grid.head'
 
 
+star_path = '/home/ian/Documents/GREAT03/star_crop.txt'
+
+# display_tiles('/home/ian/Documents/GREAT03/variable_psf/ground/constant/star_catalog-000.fits')
+
+# display_star('/home/ian/Documents/GREAT03/variable_psf/ground/constant/starfield_image-000-0.fits',
+#              23.,
+#              23.)
 
 
+# stars_in_tile = get_starfield_images_tile(catalogue_path,
+#                                           0, 0)
+#
+# gridded_image = load_grid_image(image_path)
+#
+# regridded, new_layout = regrid_tile(gridded_image, stars_in_tile, 48)
+#
+# save_grid(image_path, image_path_save, regridded)
+#
+# save_catalogue(new_layout, catalogue_path_save)
+#
+# save_fitstable(table_path_save, new_layout)
+#
+# copy_galaxy_tile_header(galaxy_tile_path, image_path_save)
+#
+# convert_positions(tiled_image_path, table_path_save, catalogue_path_true)
+#
+# write_headfile_star(head_path, image_path_save)
 
-
-
-
-
-
-
-
-
-
-
-
+plot_lensift_star(star_path)
 
 
 

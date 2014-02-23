@@ -16,9 +16,9 @@ import time
 # DEFINE RUNTIME PROCEDURES
 file_handling = 1
 lensfit_run = 1
-exec_run = 1
-lensfit_read = 1
-run_plots = 1
+exec_run = 0
+lensfit_read = 0
+run_plots = 0
 
 # START TIMER
 time_start = time.time()
@@ -30,7 +30,7 @@ lensfit_folder_root = '/home/ian/Documents/LENSFIT/'
 # SET BRANCH FOLDER AND BRANCH TYPE
 great3_branch = '0/'
 great3_branch = great3_folder_root + great3_branch
-great3_branch_type = 'standard_non_tiled/'
+great3_branch_type = 'data_test_2/'
 great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
