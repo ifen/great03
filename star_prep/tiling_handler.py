@@ -1,15 +1,15 @@
 __author__ = 'Ian Fenech Conti'
 
 import pyfits
-from pyfits import Column
 import matplotlib.pyplot as plt
 import numpy
 import sys
 import os
+import pydrizzle.xytosky as xy_conv
 
+from pyfits import Column
 from decimal import *
 from galaxy_prep.write_headfile import *
-import pydrizzle.xytosky as xy_conv
 
 
 def display_tiles(catalogue_path):
@@ -149,8 +149,8 @@ def save_catalogue(tile_positions, save_path):
                    Decimal(tile_position[5]),
                    Decimal(tile_position[6]),
                    Decimal(tile_position[7]),
-                   Decimal((tile_position[6]*4800)/10)+2,
-                   Decimal((tile_position[7]*4800)/10)+1))
+                   Decimal(((tile_position[6]*4800)/10)+2),
+                   Decimal(((tile_position[7]*4800)/10)+1)))
 
     f.close()
 

@@ -9,7 +9,6 @@ from array import array
 import pydrizzle.xytosky as converter
 import sys
 import os
-
 from decimal import *
 
 from galaxy_prep.package_results import *
@@ -47,7 +46,7 @@ catalogue_path_true = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/
 head_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/starfield_image-000-0.grid.head'
 
 
-star_path = '/home/ian/Documents/GREAT03/star_crop.txt'
+star_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/star_crop.txt'
 
 # display_tiles('/home/ian/Documents/GREAT03/variable_psf/ground/constant/star_catalog-000.fits')
 

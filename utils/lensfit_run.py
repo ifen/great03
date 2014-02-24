@@ -1,5 +1,15 @@
 __author__ = 'Ian Fenech Conti'
 
+import sys
+import os
+import datetime
+import time
+
+pydrizzle_path = '/home/ian/Downloads/Ureka/python/lib/python2.7/site-packages/pydrizzle'
+if pydrizzle_path in sys.path:
+    sys.path.remove(pydrizzle_path)
+sys.path.append('/home/ian/PycharmProjects/great03/')
+
 from galaxy_prep.convert_xy import *
 from galaxy_prep.prepare_header import *
 from galaxy_prep.set_tabledata import *
@@ -9,16 +19,13 @@ from galaxy_prep.package_results import *
 from galaxy_prep.tile_image import *
 from star_prep.crop_psf import *
 
-import os
-import datetime
-import time
-
 # DEFINE RUNTIME PROCEDURES
 file_handling = 1
 lensfit_run = 1
-exec_run = 0
+exec_run = 1
 lensfit_read = 0
 run_plots = 0
+use_tiles = 1
 
 # START TIMER
 time_start = time.time()
@@ -28,9 +35,14 @@ great3_folder_root = '/home/ian/Documents/GREAT03/'
 lensfit_folder_root = '/home/ian/Documents/LENSFIT/'
 
 # SET BRANCH FOLDER AND BRANCH TYPE
-great3_branch = '0/'
+if len(sys.argv) > 1:
+    great3_branch = sys.argv[1]
+    great3_branch_type = sys.argv[2]
+else:
+    great3_branch = '0/'
+    great3_branch_type = 'data_test_2/'
+
 great3_branch = great3_folder_root + great3_branch
-great3_branch_type = 'data_test_2/'
 great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
@@ -80,7 +92,6 @@ path_imagefilelist = great3_prep + args_input_name
 # DEFINE RUNTIME PARAMATERS
 pad_size = 0
 crop_size = 48
-use_tiles = 0
 
 # BUILD PSF COEFF EXEC
 psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
@@ -105,36 +116,40 @@ envdata_psfdir = great3_prep
 envdata_cataloguedir = path_catalogue_deg_asc
 envdata_swarpconfig = lensfit_folder_root + path_swarp
 
+print '  branch location : %s' % great3_branch_type
+print '  using tiles : %d' % use_tiles
+
 if file_handling:
     # FILE HANDLING
     if not os.path.isdir(great3_branch_type):
-        print 'prep dir does not exist\n'
-        print 'creating prep dir\n'
+        print '  prep dir does not exist\n'
+        print '  creating prep dir'
         os.makedirs(great3_prep)
 
     if not os.path.isdir(great3_prep):
-        print 'prep dir does not exist\n'
-        print 'creating prep dir\n'
+        print '  prep dir does not exist\n'
+        print '  creating prep dir'
         os.makedirs(great3_prep)
 
     if not os.path.isdir(great3_tile):
-        print 'tile dir does not exist\n'
-        print 'creating tile dir\n'
+        print '  tile dir does not exist\n'
+        print '  creating tile dir'
         os.makedirs(great3_tile)
 
     if not os.path.isdir(great3_out):
-        print 'out dir does not exist\n'
-        print 'creating out dir\n'
+        print '  out dir does not exist\n'
+        print '  creating out dir'
         os.makedirs(great3_out)
 
 if lensfit_run:
     # START THE CONVERSION CODE
 
     # log the start time.
-    print 'lensfit run started at : ' + str(datetime.datetime.now())
+    print '  lensfit run started at : ' + str(datetime.datetime.now())
 
     # remove the previous prep. data from the
     # folder and replace with new data.
+    print '  emptying dir'
     os.chdir(great3_prep)
     os.system('rm -f *')
 
@@ -181,12 +196,12 @@ if lensfit_run:
 
     if exec_run:
         # DEBUGGING THE FILENAMES/ EXEC PATHS
-        print 'debugging args\n'
+        print '  debugging args\n'
         print lensfit_args
         print readlensfit_args
         print psfcoeff_args
 
-        print '\n\ndebugging env_variables\n'
+        print '\n\n  debugging env_variables\n'
         print envdata_datadir
         print envdata_headdir
         print envdata_psfdir
@@ -194,7 +209,7 @@ if lensfit_run:
         print envdata_swarpconfig
 
         # RUN LENSFIT
-        print '\n\npreparing to start lensfit\n'
+        print '\n\n  preparing to start lensfit\n'
 
         os.chdir(great3_folder_root + '/utils/')
         if use_tiles:
@@ -231,7 +246,7 @@ m, s = divmod(time_length, 60)
 h, m = divmod(m, 60)
 run_time = "%d:%02d:%d" % (h, m, s)
 
-print 'lensfit run-time was : ' + run_time
+print '  lensfit run-time was : ' + run_time
 
 if run_plots:
     # PLOT THE RESULTS FOR ANALYSIS
