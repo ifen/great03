@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy
 import sys
 import os
+import copy
 import pydrizzle.xytosky as xy_conv
 
 from pyfits import Column
@@ -32,10 +33,10 @@ def display_tiles(catalogue_path):
         if real_tile_x == 2 and real_tile_y == 2:
             tile_count += 1
 
-        real_tile.append(real_tile_x * 0.342 + real_tile_y + 9.323)
+        real_tile.append(real_tile_x * 1.5 + real_tile_y * 9.323)
 
-    print 'smallest x-value : %d' % min(real_x_pos)
-    print 'smallest y-value : %d' % min(real_y_pos)
+    print 'smallest x-value : %f' % min(real_x_pos)
+    print 'smallest y-value : %f' % min(real_y_pos)
     print 'tile count : %d' % tile_count
 
     plt.figure()
@@ -93,27 +94,153 @@ def get_starfield_images_tile(catalogue_path, tile_index_x, tile_index_y):
     return starfield_images
 
 
+def get_starfield_images_tile_2(catalogue_path, tile_index_x, tile_index_y, overlap):
+
+    starfield_images = []
+    starfield_images_deg = []
+
+    f = pyfits.open(catalogue_path)
+    table_data = f[1].data
+
+    x_start_deg = (2.0 * tile_index_x) - overlap
+    x_end_deg = ((2.0 * tile_index_x) + 2.0) + overlap
+    y_start_deg = (2.0 * tile_index_y) - overlap
+    y_end_deg = ((2.0 * tile_index_y) + 2.0) + overlap
+
+    for starfield_position in table_data.base:
+        starfield_data = starfield_position
+        if (x_start_deg <= starfield_data[6] < x_end_deg) and (y_start_deg <= starfield_data[7] < y_end_deg):
+            starfield_images_deg.append(starfield_data)
+
+    starfield_images_deg.sort(key=lambda tup: (tup[4], tup[5]))
+
+    display_tile(starfield_images_deg)
+
+    return starfield_images_deg
+
+
+def get_starfield_images_tile_deg(catalogue_path, tile_index_x, tile_index_y, width, overlap):
+
+    starfield_images_deg = []
+
+    f = pyfits.open(catalogue_path)
+    table_data = f[1].data
+
+    x_start_deg = tile_index_x
+    x_end_deg = tile_index_x + width
+    y_start_deg = tile_index_y
+    y_end_deg = tile_index_y + width
+
+    for starfield_position in table_data.base:
+        starfield_data = starfield_position
+        if (x_start_deg <= starfield_data[6] < x_end_deg) and (y_start_deg <= starfield_data[7] < y_end_deg):
+            starfield_images_deg.append(starfield_data)
+
+    starfield_images_deg.sort(key=lambda tup: (tup[4], tup[5]))
+
+    display_tile(starfield_images_deg)
+
+    return starfield_images_deg
+
+
+def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, overlap):
+
+    stars_in_subtile = []
+
+    x_start_deg = (starfield_tile.tile_x * starfield_tile.tile_size) + \
+                  (starfield_subtile.tile_x * starfield_subtile.tile_size) - overlap
+    x_end_deg = (starfield_tile.tile_x * starfield_tile.tile_size) + \
+                (starfield_subtile.tile_x * starfield_subtile.tile_size) + starfield_subtile.tile_size + overlap
+
+    y_start_deg = (starfield_tile.tile_y * starfield_tile.tile_size) + \
+                  (starfield_subtile.tile_y * starfield_subtile.tile_size) - overlap
+    y_end_deg = (starfield_tile.tile_y * starfield_tile.tile_size) + \
+                (starfield_subtile.tile_y * starfield_subtile.tile_size) + starfield_subtile.tile_size + overlap
+
+    print 'x (%f : %f) y (%f : %f) ' % (x_start_deg, x_end_deg, y_start_deg, y_end_deg)
+
+    for starfield_position in stars:
+        starfield_data = starfield_position
+        if (x_start_deg <= starfield_data[6] < x_end_deg) and (y_start_deg <= starfield_data[7] < y_end_deg):
+            stars_in_subtile.append(starfield_data)
+
+    stars_in_subtile.sort(key=lambda tup: (tup[4], tup[5]))
+
+    # display_tile(stars_in_subtile)
+
+    return stars_in_subtile
+
+
+def display_tile(tile):
+    real_x_pos = []
+    real_y_pos = []
+    real_tile = []
+
+    for starfield_position in tile:
+        real_x_pos.append((starfield_position[6] * 4800) / 10)
+        real_y_pos.append((starfield_position[7] * 4800) / 10)
+
+        real_tile_x = starfield_position[2]
+        real_tile_y = starfield_position[3]
+
+        real_tile.append(real_tile_x + 1.5 * real_tile_y + 9.323)
+
+    plt.figure()
+    plt.ylim([-10, 4810])
+    plt.xlim([-10, 4810])
+    plt.title('Starfield - True Gridded Star Positions')
+    plt.scatter(real_x_pos, real_y_pos, c=real_tile, marker='+')
+
+    plt.draw()
+    plt.show()
+
+
 def regrid_tile(gridded_image, starfield_images, postage_stamp_size):
 
     num_stars = len(starfield_images)
-    new_grid = numpy.zeros(shape=(postage_stamp_size, num_stars*postage_stamp_size ))
+    new_grid = numpy.zeros(shape=(postage_stamp_size, num_stars*postage_stamp_size))
 
-    for tile_index, tile_image in enumerate(starfield_images):
-        start = tile_index * postage_stamp_size
-        to = tile_index * postage_stamp_size + postage_stamp_size
+    tmp_starfield_images = []
 
-        tile_x = tile_image[0]
-        tile_y = tile_image[1]
-        star_crop = get_star(tile_x, tile_y, gridded_image)
+    for i, starfield_image in enumerate(starfield_images):
+        tmp_starfield = copy.copy(starfield_image)
+        x = tmp_starfield[0]
+        y = tmp_starfield[1]
 
-        new_grid[0:postage_stamp_size, start:to] = star_crop
-        tile_image[0] = tile_index * postage_stamp_size + 23
-        tile_image[1] = 23.
+        star = get_star(x, y, gridded_image)
 
-    plt.imshow(new_grid, aspect='auto', origin='lower')
-    plt.ion()
-    plt.show()
-    return new_grid, starfield_images
+        start = i * postage_stamp_size
+        end = i * postage_stamp_size + postage_stamp_size
+
+        new_grid[0:postage_stamp_size, start:end] = star
+
+        tmp_starfield[0] = 23.
+        tmp_starfield[1] = i * postage_stamp_size + 23
+
+        tmp_starfield_images.append(tmp_starfield)
+
+    # ------------------------- old code  ---------------------
+    # for tile_index, tile_image in enumerate(starfield_images):
+    #     start = tile_index * postage_stamp_size
+    #     to = tile_index * postage_stamp_size + postage_stamp_size
+    #
+    #     tile_x = tile_image[0]
+    #     tile_y = tile_image[1]
+    #     star_crop = get_star(tile_x, tile_y, gridded_image)
+    #
+    #     try:
+    #         new_grid[0:postage_stamp_size, start:to] = star_crop
+    #         tile_image[0] = tile_index * postage_stamp_size + 23
+    #         tile_image[1] = 23.
+    #     except ValueError as detail:
+    #         print detail
+    #         print ' error : %d %d: len : %d,  start %d to %d' % (tile_x, tile_y, len(star_crop), start, to)
+    #         break
+    #
+
+    # plt.imshow(new_grid, aspect='auto', origin='lower')
+    # plt.show()
+    return new_grid, tmp_starfield_images
 
 
 def save_grid(original_path, save_path, gridded_image):
@@ -128,6 +255,7 @@ def save_catalogue(tile_positions, save_path):
 
     f = open(save_path, 'w')
 
+    f.write('# elements %d\n' % len(tile_positions))
     f.write('# x_gridded_pos\n')
     f.write('# y_gridded_pos\n')
     f.write('# x_tile_index\n')
@@ -214,6 +342,45 @@ def copy_galaxy_tile_header(galaxy_tile_image, starfield_tile_image):
     fits_hdu_starfield[0].header.set('GAIN', 10000)
 
     fits_hdu_starfield.writeto(starfield_tile_image, clobber=True)
+
+
+def set_header_data(starfield_tile, starfield_subtile, galaxy_tile_image):
+
+    fits_hdu = pyfits.open(galaxy_tile_image)
+    galaxy_tile_header = fits_hdu[0].header
+
+    naxis_1 = galaxy_tile_header['NAXIS1']
+    naxis_2 = galaxy_tile_header['NAXIS2']
+
+    fits_hdu_starfield = pyfits.open(starfield_subtile.image_path)
+    fits_hdu_starfield[0].header = galaxy_tile_header
+
+    tile_start_x = (starfield_tile.tile_x * naxis_1) / 10
+    tile_start_y = (starfield_tile.tile_y * naxis_1) / 10
+
+    subtile_start_x = (((starfield_subtile.tile_x*starfield_subtile.tile_size)*naxis_2) / 10)
+    subtile_start_y = (((starfield_subtile.tile_y*starfield_subtile.tile_size)*naxis_2) / 10)
+
+    x_offset = naxis_1/2 - (tile_start_x + subtile_start_x)
+    y_offset = naxis_2/2 - (tile_start_y + subtile_start_y)
+
+    fits_hdu_starfield[0].header.update('CRPIX1', x_offset)
+    fits_hdu_starfield[0].header.update('CRPIX2', y_offset)
+    fits_hdu_starfield[0].header.set('GAIN', 10000)
+
+    fits_hdu_starfield.writeto(starfield_subtile.image_path, clobber=True)
+
+
+def set_placeholder(starfield_subtile):
+
+    gridded_hdu = pyfits.open(starfield_subtile.image_path)
+
+    placeholder_size = (starfield_subtile.tile_size*4800)/10
+    placeholder = numpy.zeros(shape=(placeholder_size, placeholder_size))
+
+    gridded_hdu[0].data = placeholder
+
+    gridded_hdu.writeto(starfield_subtile.image_placeholder, clobber=True)
 
 
 def write_headfile_star(path_headfile, path_image):

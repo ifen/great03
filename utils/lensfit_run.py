@@ -22,7 +22,7 @@ from star_prep.crop_psf import *
 # DEFINE RUNTIME PROCEDURES
 file_handling = 1
 lensfit_run = 1
-exec_run = 1
+exec_run = 0
 lensfit_read = 0
 run_plots = 0
 use_tiles = 1
@@ -39,8 +39,8 @@ if len(sys.argv) > 1:
     great3_branch = sys.argv[1]
     great3_branch_type = sys.argv[2]
 else:
-    great3_branch = '0/'
-    great3_branch_type = 'data_test_2/'
+    great3_branch = 'variable_psf/ground/constant/'
+    great3_branch_type = 'starfield_tiling/'
 
 great3_branch = great3_folder_root + great3_branch
 great3_branch_type = great3_branch + great3_branch_type
