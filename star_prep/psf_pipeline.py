@@ -1,6 +1,7 @@
 __author__ = 'Ian Fenech Conti'
 
 import shutil
+import copy
 
 from star_prep.psf_handler import *
 from star_prep.tiling_handler import *
@@ -20,7 +21,7 @@ TILES_IMAGE = int(10./TILE_SIZE)
 
 SUBTILE_SIZE = 0.5
 SUBTILE_IMAGE = int(TILE_SIZE/SUBTILE_SIZE)
-SUBTILE_OVERLAP = 0.2
+SUBTILE_OVERLAP = 0.1
 
 POSTAGE_SIZE = 48
 
@@ -30,6 +31,12 @@ if len(sys.argv) < 1:
 
 branch_collection = BranchCollection()
 branch_collection.branch_path = '%s%s' % (ROOT_PATH, BRANCH_PATH)
+
+
+def model_psf(package):
+    for sub_tile in package:
+        print sub_tile.image_path
+
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
 
@@ -95,8 +102,8 @@ for starfield_image in branch_collection.images:
         for starfield_subtile in starfield_tile.subtiles:
 
             subtile_directory = '%s%d%d/' % (starfield_tile.path,
-                                            starfield_subtile.tile_x,
-                                            starfield_subtile.tile_y)
+                                             starfield_subtile.tile_x,
+                                             starfield_subtile.tile_y)
 
             subtile_imagepath = '%s%d%d.fits' % (subtile_directory,
                                                  starfield_subtile.tile_x,
@@ -119,19 +126,22 @@ for starfield_image in branch_collection.images:
                                                        starfield_subtile.tile_x,
                                                        starfield_subtile.tile_y)
 
+            subtile_headpath = '%s%d%d.head' % (subtile_directory,
+                                                starfield_subtile.tile_x,
+                                                starfield_subtile.tile_y)
+
             starfield_subtile.directory = subtile_directory
             starfield_subtile.image_path = subtile_imagepath
             starfield_subtile.image_placeholder = subtile_imageplaceholder
             starfield_subtile.catalogue_path_before = subtile_cataloguepath_before
             starfield_subtile.catalogue_path = subtile_cataloguepath
             starfield_subtile.table_path = subtile_tablepath
+            starfield_subtile.head_path = subtile_headpath
 
             if os.path.isdir(subtile_directory):
                 shutil.rmtree(subtile_directory)
 
             os.mkdir(subtile_directory)
-
-            print '... processing tile %s ' % starfield_subtile.image_path
 
             starfield_subtile.stars_in_subtile = \
                 get_starfield_images_sub_tile(starfield_tile.stars_in_tile,
@@ -164,4 +174,9 @@ for starfield_image in branch_collection.images:
                               starfield_subtile.table_path,
                               starfield_subtile.catalogue_path)
 
-            print '... tile done '
+            write_headfile_star(starfield_subtile.head_path,
+                                starfield_subtile.image_path)
+
+            write_input_file('%sinput.asc' % subtile_directory,
+                             '%d%d' % (starfield_subtile.tile_x, starfield_subtile.tile_y))
+

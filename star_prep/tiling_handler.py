@@ -387,6 +387,12 @@ def write_headfile_star(path_headfile, path_image):
     write_headfile(path_headfile, path_image)
 
 
+def write_input_file(path_input, file_name):
+    f = open(path_input, 'w')
+    f.write(file_name + '\n')
+    f.close()
+
+
 def plot_lensift_star(star_path):
     lines = [line.strip() for line in open(star_path)]
 

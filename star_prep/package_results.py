@@ -8,7 +8,7 @@ import math
 import sys
 import os
 
-log_file = '/home/ian/Documents/LENSFIT/TAMAL/2/starfield_image-000-0.grid_ellipticities.log'
+log_file = '/home/ian/Documents/LENSFIT/TAMAL/runs/13_ellipticities.log'
 
 lines = [line.strip() for line in open(log_file)]
 

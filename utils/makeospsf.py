@@ -20,8 +20,9 @@ lensfit_path = sys.argv[4]
 os.environ['SWARP_CONFIG'] = lensfit_path + 'swarp/create_coadd_swarp.swarp'
 os.environ['HEAD_DIR'] = root_path
 os.environ['PSF_DIR'] = root_path
-os.environ['CATALOGUE_STARS'] = root_path + 'starfield_image-000-0.grid.asc'
+os.environ['CATALOGUE_STARS'] = root_path + '00.asc'
 os.environ['DATA_DIR'] = root_path
+os.environ['SAVE_NAME'] = '00'
 
 print 'env. variables set'
 

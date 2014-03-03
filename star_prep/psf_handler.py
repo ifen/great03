@@ -49,5 +49,6 @@ class StarfieldSubtile:
         self.catalogue_path_before = ''
         self.catalogue_path = ''
         self.table_path = ''
+        self.head_path = ''
         self.stars_in_subtile = []
         self.image_data = []
