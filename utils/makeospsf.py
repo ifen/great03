@@ -26,8 +26,8 @@ os.environ['SAVE_NAME'] = '00'
 
 print 'env. variables set'
 
-# makeopsf_exec = './makeospsf %sfile_list.asc %s none 30 > %s%s' % (root_path, order, root_path, log_name)
-makeopsf_exec = './makeospsf %sfile_list.asc %s none 30' % (root_path, order)
+makeopsf_exec = './makeospsf %sinput.asc %s none 30 > %s%s' % (root_path, order, root_path, log_name)
+#makeopsf_exec = './makeospsf %sfile_list.asc %s none 30' % (root_path, order)
 log_file = '%s%s' % (root_path, log_name)
 source_path = '%ssrc/' % lensfit_path
 

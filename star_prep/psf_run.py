@@ -30,9 +30,9 @@ PROCESS_FINISH = 1
 TILE_SIZE = 2
 TILES_IMAGE = int(10./TILE_SIZE)
 
-SUBTILE_SIZE = 0.5
+SUBTILE_SIZE = 2
 SUBTILE_IMAGE = int(TILE_SIZE/SUBTILE_SIZE)
-SUBTILE_OVERLAP = 0.1
+SUBTILE_OVERLAP = 0
 
 SNR_RATIO = 30
 
@@ -151,4 +151,4 @@ for i in range(NO_THREADS):
 q.join()
 
 print '\n   ... all items processed'
-print strftime("%Y-%m-%d %H:%M:%S\n", gmtime())
+print strftime("  %Y-%m-%d %H:%M:%S\n", gmtime())

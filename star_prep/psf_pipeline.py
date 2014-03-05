@@ -10,16 +10,16 @@ from star_prep.tiling_handler import *
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'variable_psf/ground/constant/'
 FILE_NAME = 'starfield_image-'
+
 SAMPLE_HEADER = '%s%s000/data_test_tiled/prep/image0.fits' \
                 % (ROOT_PATH, BRANCH_PATH)
-
 PROCESS_START = 0
 PROCESS_FINISH = 1
 
 TILE_SIZE = 2
 TILES_IMAGE = int(10./TILE_SIZE)
 
-SUBTILE_SIZE = 0.5
+SUBTILE_SIZE = 1
 SUBTILE_IMAGE = int(TILE_SIZE/SUBTILE_SIZE)
 SUBTILE_OVERLAP = 0.1
 
@@ -53,8 +53,8 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
 
 for starfield_image in branch_collection.images:
 
-    sub_directory = '%sstarfield-%03d/' % (branch_collection.branch_path,
-                                           starfield_image.image_id)
+    sub_directory = '%sstarfield--%03d/' % (branch_collection.branch_path,
+                                            starfield_image.image_id)
 
     if os.path.isdir(sub_directory):
         shutil.rmtree(sub_directory)

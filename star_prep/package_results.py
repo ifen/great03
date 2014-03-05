@@ -1,14 +1,9 @@
 __author__ = 'Ian Fenech Conti'
 
-import pyfits
 import matplotlib.pyplot as plt
 import numpy as np
-import math
 
-import sys
-import os
-
-log_file = '/home/ian/Documents/LENSFIT/TAMAL/runs/13_ellipticities.log'
+log_file = '/home/ian/Documents/GREAT03/test/new_method/01_ellipticities.log'
 
 lines = [line.strip() for line in open(log_file)]
 
