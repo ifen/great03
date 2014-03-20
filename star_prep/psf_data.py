@@ -19,9 +19,9 @@ PROCESS_FINISH = 1
 TILE_SIZE = 2
 TILES_IMAGE = int(10./TILE_SIZE)
 
-SUBTILE_SIZE = 1
+SUBTILE_SIZE = 0.5
 SUBTILE_IMAGE = int(TILE_SIZE/SUBTILE_SIZE)
-SUBTILE_OVERLAP = 0.1
+SUBTILE_OVERLAP = 0.05
 
 POSTAGE_SIZE = 48
 
@@ -53,8 +53,8 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
 
 for starfield_image in branch_collection.images:
 
-    sub_directory = '%sstarfield--%03d/' % (branch_collection.branch_path,
-                                            starfield_image.image_id)
+    sub_directory = '%sstarfield-%03d/' % (branch_collection.branch_path,
+                                           starfield_image.image_id)
 
     if os.path.isdir(sub_directory):
         shutil.rmtree(sub_directory)
@@ -148,6 +148,8 @@ for starfield_image in branch_collection.images:
                                               starfield_tile,
                                               starfield_subtile,
                                               SUBTILE_OVERLAP)
+
+            print len(starfield_subtile.stars_in_subtile)
 
             starfield_subtile.image_data, starfield_subtile.stars_in_subtile\
                 = regrid_tile(starfield_image.image_data,

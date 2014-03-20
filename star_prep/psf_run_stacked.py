@@ -12,9 +12,6 @@ LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'variable_psf/ground/constant/'
-FILE_NAME = 'starfield_image-'
-SAMPLE_HEADER = '%s%s000/data_test_tiled/prep/image0.fits' \
-                % (ROOT_PATH, BRANCH_PATH)
 
 if len(sys.argv) > 1:
     NO_THREADS = int(sys.argv[1])
@@ -122,7 +119,7 @@ def makeospsf():
         q.task_done()
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
-    branch_path = '%s%sstarfield-%03d/' % \
+    branch_path = '%s%sfield-%02d/' % \
                   (ROOT_PATH,
                    BRANCH_PATH,
                    ID)
@@ -141,7 +138,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
                     subtile = StarfieldSubtile(sub_subdirectory, subtile_x, subtile_y)
                     q.put(subtile)
 
-print ' ... starting threaded run\n'
+print ' ... starting stacked threaded run\n'
 print strftime("%Y-%m-%d %H:%M:%S\n\n", gmtime())
 
 

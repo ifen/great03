@@ -7,10 +7,19 @@ class BranchCollection:
         self.data = []
         self.branch_path = ''
         self.branch_type = 'ground'
-        self.images = []
+        self.fields = []
 
 
-class StarfieldImage:
+class StarfieldField:
+
+    def __init__(self):
+        self.data = []
+        self.id = 0
+        self.subfields = []
+        self.directory = ''
+
+
+class StarfieldSubField:
 
     def __init__(self):
         self.data = []
@@ -18,13 +27,13 @@ class StarfieldImage:
         self.file_path = ''
         self.catalogue_path = ''
         self.image_id = -1
-        self.branch_type = 'ground'
         self.tile_path = ''
         self.offset_path = ''
         self.offset_x = 0
         self.offset_y = 0
         self.tiles = []
         self.image_data = []
+        self.starfield_tiles = []
 
 
 class StarfieldTile:

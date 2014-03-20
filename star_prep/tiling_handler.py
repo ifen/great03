@@ -7,6 +7,8 @@ import sys
 import os
 import copy
 import pydrizzle.xytosky as xy_conv
+from scipy.spatial import Delaunay
+import matplotlib.delaunay as triang
 
 from pyfits import Column
 from decimal import *
@@ -94,6 +96,27 @@ def get_starfield_images_tile(catalogue_path, tile_index_x, tile_index_y):
     return starfield_images
 
 
+def get_starfield_images_tile_offset(catalogue_path, tile_index_x, tile_index_y, offset_x, offset_y):
+
+    starfield_images = []
+
+    f = pyfits.open(catalogue_path)
+    table_data = f[1].data
+
+    for starfield_position in table_data.base:
+        starfield_data = starfield_position
+        if starfield_data[2] == tile_index_x and starfield_data[3] == tile_index_y:
+            starfield_data[4] += offset_x
+            starfield_data[5] += offset_y
+            starfield_data[6] += offset_x
+            starfield_data[7] += offset_y
+            starfield_images.append(starfield_data)
+
+    starfield_images.sort(key=lambda tup: (tup[4], tup[5]))
+
+    return starfield_images
+
+
 def get_starfield_images_tile_2(catalogue_path, tile_index_x, tile_index_y, overlap):
 
     starfield_images = []
@@ -143,7 +166,7 @@ def get_starfield_images_tile_deg(catalogue_path, tile_index_x, tile_index_y, wi
     return starfield_images_deg
 
 
-def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, overlap):
+def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, overlap, flag):
 
     stars_in_subtile = []
 
@@ -157,7 +180,7 @@ def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, over
     y_end_deg = (starfield_tile.tile_y * starfield_tile.tile_size) + \
                 (starfield_subtile.tile_y * starfield_subtile.tile_size) + starfield_subtile.tile_size + overlap
 
-    print 'x (%f : %f) y (%f : %f) ' % (x_start_deg, x_end_deg, y_start_deg, y_end_deg)
+    # print 'x (%f : %f) y (%f : %f) ' % (x_start_deg, x_end_deg, y_start_deg, y_end_deg)
 
     for starfield_position in stars:
         starfield_data = starfield_position
@@ -165,13 +188,14 @@ def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, over
             stars_in_subtile.append(starfield_data)
 
     stars_in_subtile.sort(key=lambda tup: (tup[4], tup[5]))
+    res = stars_in_subtile
 
-    # display_tile(stars_in_subtile)
+    # display_tile(res)
 
-    return stars_in_subtile
+    return res
 
 
-def display_tile(tile):
+def display_tile(tile, i):
     real_x_pos = []
     real_y_pos = []
     real_tile = []
@@ -183,15 +207,55 @@ def display_tile(tile):
         real_tile_x = starfield_position[2]
         real_tile_y = starfield_position[3]
 
+        real_tile.append(i)
+
+    plt.ylim([0, 270])
+    plt.xlim([0, 270])
+    plt.title('Starfield - True Gridded Star Single Subfield')
+    c = i/20.0
+    print c
+    plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
+
+    # plt.ion()
+    plt.draw()
+    plt.show()
+
+
+def display_tile_stacked(tile):
+    real_x_pos = []
+    real_y_pos = []
+    real_tile = []
+    point = []
+
+    for starfield_position in tile:
+        real_x_pos.append((starfield_position[6] * 4800) / 10)
+        real_y_pos.append((starfield_position[7] * 4800) / 10)
+
+        point.append(((starfield_position[6] * 4800) / 10, (starfield_position[7] * 4800) / 10))
+
+        real_tile_x = starfield_position[2]
+        real_tile_y = starfield_position[3]
+
         real_tile.append(real_tile_x + 1.5 * real_tile_y + 9.323)
 
-    plt.figure()
-    plt.ylim([-10, 4810])
-    plt.xlim([-10, 4810])
-    plt.title('Starfield - True Gridded Star Positions')
-    plt.scatter(real_x_pos, real_y_pos, c=real_tile, marker='+')
+    # plt.ylim([-10, 4810])
+    # plt.xlim([-10, 4810])
+    # plt.title('Starfield - True Gridded Star Single Subfield')
+    # plt.scatter(real_x_pos, real_y_pos, c=real_tile, marker='+')
+    # plt.ion()
+    # plt.draw()
+    # plt.show()
 
-    plt.draw()
+    real_x_pos = numpy.array(real_x_pos)
+    real_y_pos = numpy.array(real_y_pos)
+
+    cens, edg, tri, neig = triang.delaunay(real_x_pos, real_y_pos)
+
+    for t in tri:
+        t_i = [t[0], t[1], t[2], t[0]]
+        plt.plot(real_x_pos[t_i], real_y_pos[t_i])
+
+    plt.plot(real_x_pos, real_y_pos, 'o')
     plt.show()
 
 
@@ -214,29 +278,39 @@ def regrid_tile(gridded_image, starfield_images, postage_stamp_size):
 
         new_grid[0:postage_stamp_size, start:end] = star
 
-        tmp_starfield[0] = 23.
-        tmp_starfield[1] = i * postage_stamp_size + 23
+        tmp_starfield[0] = i * postage_stamp_size + 23
+        tmp_starfield[1] = 23.
 
         tmp_starfield_images.append(tmp_starfield)
 
-    # ------------------------- old code  ---------------------
-    # for tile_index, tile_image in enumerate(starfield_images):
-    #     start = tile_index * postage_stamp_size
-    #     to = tile_index * postage_stamp_size + postage_stamp_size
-    #
-    #     tile_x = tile_image[0]
-    #     tile_y = tile_image[1]
-    #     star_crop = get_star(tile_x, tile_y, gridded_image)
-    #
-    #     try:
-    #         new_grid[0:postage_stamp_size, start:to] = star_crop
-    #         tile_image[0] = tile_index * postage_stamp_size + 23
-    #         tile_image[1] = 23.
-    #     except ValueError as detail:
-    #         print detail
-    #         print ' error : %d %d: len : %d,  start %d to %d' % (tile_x, tile_y, len(star_crop), start, to)
-    #         break
-    #
+    # plt.imshow(new_grid, aspect='auto', origin='lower')
+    # plt.show()
+    return new_grid, tmp_starfield_images
+
+
+def regrid_tile_stacked(gridded_image, starfield_images, postage_stamp_size, offset):
+
+    num_stars = len(starfield_images)
+    new_grid = numpy.zeros(shape=(postage_stamp_size, num_stars*postage_stamp_size))
+
+    tmp_starfield_images = []
+
+    for i, starfield_image in enumerate(starfield_images):
+        tmp_starfield = copy.copy(starfield_image)
+        x = tmp_starfield[0]
+        y = tmp_starfield[1]
+
+        star = get_star(x, y, gridded_image)
+
+        start = i * postage_stamp_size
+        end = i * postage_stamp_size + postage_stamp_size
+
+        new_grid[0:postage_stamp_size, start:end] = star
+
+        tmp_starfield[0] = i * postage_stamp_size + 23 + offset
+        tmp_starfield[1] = 23.
+
+        tmp_starfield_images.append(tmp_starfield)
 
     # plt.imshow(new_grid, aspect='auto', origin='lower')
     # plt.show()

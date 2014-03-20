@@ -31,80 +31,86 @@ from star_prep.tiling_handler import *
 #
 # print tile_image(path_image, path_tile, 'ground')
 
-catalogue_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/star_catalog-000.fits'
+ROOT_PATH = '/home/ian/Documents/GREAT03/'
+BRANCH_PATH = 'variable_psf/ground/constant/'
+OFFSET_NAME = 'subfield_offset-'
+IMAGE_NAME = 'starfield_image-'
 
-image_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/starfield_image-000-0.fits'
-image_path_save = '/home/ian/Documents/GREAT03/subtiles/starfield_image-000-0.grid.fits'
+FIELD_ID = 0
+SUB_FIELDS = 20
 
-catalogue_path_save = '/home/ian/Documents/GREAT03/subtiles/starfield_image-000-0.before.grid.asc'
-table_path_save = '/home/ian/Documents/GREAT03/subtiles/starfield_image-000-0.tab.grid.fits'
+FIELD_START = FIELD_ID * SUB_FIELDS
+FIELD_END = (FIELD_ID * SUB_FIELDS) + SUB_FIELDS
 
-galaxy_tile_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/data_test_tiled/prep/image0-00.tile.fits'
-tiled_image_path = '%s[0]' % galaxy_tile_path
-catalogue_path_true = '/home/ian/Documents/GREAT03/subtiles/starfield_image-000-0.grid.asc'
-
-head_path = '/home/ian/Documents/GREAT03/subtiles/starfield_image-000-0.grid.head'
-
-
-star_path = '/home/ian/Documents/GREAT03/variable_psf/ground/constant/000/star_crop.txt'
-
-# display_tiles('/home/ian/Documents/GREAT03/variable_psf/ground/constant/star_catalog-000.fits')
-
-# display_star('/home/ian/Documents/GREAT03/variable_psf/ground/constant/starfield_image-000-0.fits',
-#              23.,
-#              23.)
-
-#
-# stars_in_tile = get_starfield_images_tile_deg(catalogue_path,
-#                                               0, 0.5, 0.5, 0)
-# #
-# # print len(stars_in_tile)
-# # exit()
-#
-# gridded_image = load_grid_image(image_path)
-#
-# regridded, new_layout = regrid_tile(gridded_image, stars_in_tile, 48)
-#
-# save_grid(image_path, image_path_save, regridded)
-#
-# save_catalogue(new_layout, catalogue_path_save)
-#
-# save_fitstable(table_path_save, new_layout)
-#
-# copy_galaxy_tile_header(galaxy_tile_path, image_path_save)
-#
-# convert_positions(tiled_image_path, table_path_save, catalogue_path_true)
-#
-# write_headfile_star(head_path, image_path_save)
+STARS = []
 
 
-#
-# gridded_image = load_grid_image(image_path)
-#
-# regridded, new_layout = regrid_tile(gridded_image, stars_in_tile, 48)
-#
-# save_grid(image_path, image_path_save, regridded)
-#
-# save_catalogue(new_layout, catalogue_path_save)
-#
-# save_fitstable(table_path_save, new_layout)
-#
-# copy_galaxy_tile_header(galaxy_tile_path, image_path_save)
-#
-# convert_positions(tiled_image_path, table_path_save, catalogue_path_true)
-#
-# write_headfile_star(head_path, image_path_save)
-
-# plot_lensift_star(star_path)
+class StarSubfield:
+    def __init__(self):
+        self.data = []
+        self.stars = []
+        self.tile_x = 0
+        self.tile_y = 0
 
 
+def append_stars(stars, index_x, index_y):
+    for subfield in STARS:
+        if subfield.tile_x == index_x and subfield.tile_y == index_y:
+            subfield.stars += stars
+
+for tile_x in range(0, 5):
+    for tile_y in range(0, 5):
+
+        subfield_range = StarSubfield()
+
+        subfield_range.tile_x = tile_x
+        subfield_range.tile_y = tile_y
+
+        STARS.append(subfield_range)
+
+for subfield_id in range(0, 1):
+
+    offsets_path = '%s%s%s%03d.txt' % (ROOT_PATH,
+                                       BRANCH_PATH,
+                                       OFFSET_NAME,
+                                       subfield_id)
+
+    image_path = '%s%s%s%03d-0.fits' % (ROOT_PATH,
+                                        BRANCH_PATH,
+                                        IMAGE_NAME,
+                                        subfield_id)
+
+    catalogue_path = '%s%sstar_catalog-%03d.fits' % (ROOT_PATH,
+                                                     BRANCH_PATH,
+                                                     subfield_id)
+
+    offsets = np.genfromtxt(offsets_path,
+                            dtype=None)
+
+    print offsets_path
+    print offsets[0]
+    print offsets[1]
+
+    for tile_x in range(0, 1):
+        for tile_y in range(0, 1):
+
+            temp_stars = get_starfield_images_tile_offset(catalogue_path,
+                                                          tile_x,
+                                                          tile_y,
+                                                          0,
+                                                          0)
+
+            append_stars(temp_stars,
+                         tile_x,
+                         tile_y)
 
 
+display_tile(STARS[0].stars)
+
+print len(STARS[0].stars)
 
 
-
-
-
+raw_input("Press Enter to continue...")
 
 
 

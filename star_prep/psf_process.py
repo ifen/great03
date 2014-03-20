@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
 ROOT_PATH = '/home/ian/Documents/LENSFIT/'
-BRANCH_PATH = 'TAMAL/16/'
+BRANCH_PATH = 'TAMAL/25/'
 FILE_NAME = 'starfield_image-'
 SAMPLE_HEADER = '%s%s000/data_test_tiled/prep/image0.fits' \
                 % (ROOT_PATH, BRANCH_PATH)
@@ -22,12 +22,11 @@ TILES_IMAGE = int(10./TILE_SIZE)
 
 SUBTILE_SIZE = 2
 SUBTILE_IMAGE = int(TILE_SIZE/SUBTILE_SIZE)
-SUBTILE_OVERLAP = 0.08
+SUBTILE_OVERLAP = 0.09
 
-FIT_ORDER = 4
+FIT_ORDER = 0.5
 SNR_RATIO = 30
-RUN_TIME = '00:41'
-DATA_SIZE = '350 MB'
+RUN_TIME = '1:10'
 
 
 class StarfieldSubtile:
@@ -59,7 +58,7 @@ e2_mod = []
 e2_true = []
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
-    branch_path = '%s%sstarfield-%03d/' % \
+    branch_path = '%s%sfield-%02d/' % \
                   (ROOT_PATH,
                    BRANCH_PATH,
                    ID)
@@ -79,17 +78,17 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
                     subtile = StarfieldSubtile(sub_subdirectory, subtile_x, subtile_y)
                     subtile_list.append(subtile)
 
-for subtile_results in subtile_list:
+for i, subtile_results in enumerate(subtile_list):
     file_name = '%s%d%d_ellipticities.log' % (subtile_results.path,
                                               subtile_results.tile_x,
                                               subtile_results.tile_y)
 
-    # print file_name
-
     data_table = np.genfromtxt(file_name,
                                dtype=None)
+
     global_results += data_table
-    for entry in data_table:
+
+    for j, entry in enumerate(data_table):
 
         e1_mod.append(entry[5])
         e1_true.append(entry[9])
