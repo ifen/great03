@@ -11,7 +11,7 @@ from time import gmtime, strftime
 LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
-BRANCH_PATH = 'variable_psf/ground/constant/'
+BRANCH_PATH = 'branch/sample/'
 FILE_NAME = 'starfield_image-'
 SAMPLE_HEADER = '%s%s000/data_test_tiled/prep/image0.fits' \
                 % (ROOT_PATH, BRANCH_PATH)

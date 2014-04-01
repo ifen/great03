@@ -22,10 +22,10 @@ from star_prep.crop_psf import *
 # DEFINE RUNTIME PROCEDURES
 file_handling = 1
 lensfit_run = 1
-exec_run = 0
-lensfit_read = 0
-run_plots = 0
-use_tiles = 1
+exec_run = 1
+lensfit_read = 1
+run_plots = 1
+use_tiles = 0
 
 # START TIMER
 time_start = time.time()
@@ -39,15 +39,15 @@ if len(sys.argv) > 1:
     great3_branch = sys.argv[1]
     great3_branch_type = sys.argv[2]
 else:
-    great3_branch = 'variable_psf/ground/constant/'
-    great3_branch_type = 'starfield_tiling/'
+    great3_branch = 'branch/control/ground/constant/'
+    great3_branch_type = ''
 
 great3_branch = great3_folder_root + great3_branch
 great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
-great3_prep = great3_branch_type + 'prep/'
-great3_out = great3_branch_type + 'out/'
+great3_prep = great3_branch_type + 'run/prep_noise_0/'
+great3_out = great3_branch_type + 'run/out_noise_0/'
 
 # SET TILE FOLDER
 great3_tile = great3_prep + ''
@@ -66,11 +66,11 @@ args_output_name = 'output.' + date_time_string + '.fits'
 args_output_read_name = 'output.' + date_time_string + '.asc'
 
 # SET PATHS TO INPUT DATA
-path_dither = great3_branch + 'epoch_dither-000-0.txt'
-path_offsets = great3_branch + 'subfield_offset-000.txt'
-path_catalogue = great3_branch + 'galaxy_catalog-000.fits'
-path_original_starfield = great3_branch + 'starfield_image-000-0.fits'
-path_original = great3_branch + 'image-000-0.fits'
+path_dither = great3_branch + 'deep_epoch_dither-000-0.txt'
+path_offsets = great3_branch + 'deep_subfield_offset-000.txt'
+path_catalogue = great3_branch + 'deep_galaxy_catalog-000.fits'
+path_original_starfield = great3_branch + 'deep_starfield_image-000-0.fits'
+path_original = great3_branch + 'deep_image-000-0.fits'
 
 # DEFINE ITEM NAMES TO SAVE
 image_name = 'image0'
@@ -99,7 +99,7 @@ psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
 # RUN LENSFIT COMMAND EXEC
 args_input = great3_prep + args_input_name
 args_output = great3_out + args_output_name
-args_extra = '48 1 25 21. 24.'
+args_extra = '48 1 1'
 lensfit_args = './flensfit'
 lensfit_args += ' ' + args_input + ' ' + args_output + ' ' + args_extra
 

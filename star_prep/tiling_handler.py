@@ -7,7 +7,7 @@ import sys
 import os
 import copy
 import pydrizzle.xytosky as xy_conv
-from scipy.spatial import Delaunay
+# from scipy.spatial import Delaunay
 import matplotlib.delaunay as triang
 
 from pyfits import Column

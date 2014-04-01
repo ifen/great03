@@ -11,7 +11,7 @@ from time import gmtime, strftime
 LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
-BRANCH_PATH = 'variable_psf/ground/constant/'
+BRANCH_PATH = 'branch/sample/'
 
 if len(sys.argv) > 1:
     NO_THREADS = int(sys.argv[1])
@@ -129,8 +129,8 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
                             (branch_path,
                              tile_x,
                              tile_y)
-            for subtile_x in range(0, SUBTILE_IMAGE):
-                for subtile_y in range(0, SUBTILE_IMAGE):
+            for subtile_x in range(0, 1):
+                for subtile_y in range(0, 1):
                     sub_subdirectory = '%s%d%d/' % \
                                        (sub_directory,
                                         subtile_x,

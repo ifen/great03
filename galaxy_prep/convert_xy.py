@@ -5,7 +5,6 @@ import os
 import pydrizzle.xytosky as xy_conv
 import pyfits
 
-
 def convert(fits_path, catalogue_path, asc_path, use_g3id):
     # PERFORM THE FILE CONVERSION USING XYTOSKY MODULE
     sys.stdout = open(os.devnull, "w")
