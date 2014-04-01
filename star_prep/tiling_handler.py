@@ -96,6 +96,20 @@ def get_starfield_images_tile(catalogue_path, tile_index_x, tile_index_y):
     return starfield_images
 
 
+def get_starfield_images_tile_constant(catalogue_path):
+
+    starfield_images = []
+
+    f = pyfits.open(catalogue_path)
+    table_data = f[1].data
+
+    for starfield_position in table_data.base:
+        starfield_data = starfield_position
+        starfield_images.append(starfield_data)
+
+    return starfield_images
+
+
 def get_starfield_images_tile_offset(catalogue_path, tile_index_x, tile_index_y, offset_x, offset_y):
 
     starfield_images = []
@@ -283,8 +297,8 @@ def regrid_tile(gridded_image, starfield_images, postage_stamp_size):
 
         tmp_starfield_images.append(tmp_starfield)
 
-    # plt.imshow(new_grid, aspect='auto', origin='lower')
-    # plt.show()
+    #plt.imshow(new_grid, aspect='auto', origin='lower')
+    #plt.show()
     return new_grid, tmp_starfield_images
 
 
@@ -357,6 +371,22 @@ def save_catalogue(tile_positions, save_path):
     f.close()
 
 
+def save_catalogue_constant(tile_positions, save_path):
+
+    f = open(save_path, 'w')
+
+    f.write('# elements %d\n' % len(tile_positions))
+    f.write('# x_gridded_pos\n')
+    f.write('# y_gridded_pos\n')
+
+    for tile_position in tile_positions:
+        f.write('%.18e %.18e\n'
+                % (tile_position[0],
+                   tile_position[1]))
+
+    f.close()
+
+
 def save_fitstable(table_path, tiled_positions):
 
     c1 = Column(name='x', format='D')
@@ -372,6 +402,20 @@ def save_fitstable(table_path, tiled_positions):
                          (tiled_position[0]+2),
                          (tiled_position[1]+1)
                          ]
+
+    tbhdu.writeto(table_path)
+
+
+def save_fitstable_constant(table_path, tiled_positions):
+
+    c1 = Column(name='x', format='D')
+    c2 = Column(name='y', format='D')
+    coldefs = pyfits.ColDefs([c1, c2])
+    tbhdu = pyfits.new_table(coldefs, nrows=len(tiled_positions))
+
+    for c, tiled_position in enumerate(tiled_positions):
+        tbhdu.data[c] = [(tiled_position[0]),
+                         (tiled_position[1])]
 
     tbhdu.writeto(table_path)
 
