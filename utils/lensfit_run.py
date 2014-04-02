@@ -46,8 +46,8 @@ great3_branch = great3_folder_root + great3_branch
 great3_branch_type = great3_branch + great3_branch_type
 
 # SET PREP/OUTPUT FOLDERS
-great3_prep = great3_branch_type + 'run/prep_noise_6/'
-great3_out = great3_branch_type + 'run/out_noise_6/'
+great3_prep = great3_branch_type + 'run/prep_noise_12n/'
+great3_out = great3_branch_type + 'run/out_noise_12n/'
 
 # SET TILE FOLDER
 great3_tile = great3_prep + ''
@@ -99,7 +99,7 @@ psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
 # RUN LENSFIT COMMAND EXEC
 args_input = great3_prep + args_input_name
 args_output = great3_out + args_output_name
-args_extra = '48 1 1 [6]'
+args_extra = '48 1 1 12'
 lensfit_args = './flensfit'
 lensfit_args += ' ' + args_input + ' ' + args_output + ' ' + args_extra
 

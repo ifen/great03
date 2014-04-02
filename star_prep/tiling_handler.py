@@ -489,6 +489,19 @@ def set_header_data(starfield_tile, starfield_subtile, galaxy_tile_image):
     fits_hdu_starfield.writeto(starfield_subtile.image_path, clobber=True)
 
 
+def set_header_data_constant(save_path, galaxy_tile_image):
+
+    fits_hdu = pyfits.open(galaxy_tile_image)
+    galaxy_tile_header = fits_hdu[0].header
+
+    fits_hdu_starfield = pyfits.open(save_path)
+    fits_hdu_starfield[0].header = galaxy_tile_header
+
+    fits_hdu_starfield[0].header.set('GAIN', 10000)
+
+    fits_hdu_starfield.writeto(save_path, clobber=True)
+
+
 def set_placeholder(starfield_subtile):
 
     gridded_hdu = pyfits.open(starfield_subtile.image_path)
