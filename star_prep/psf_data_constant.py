@@ -9,7 +9,7 @@ from star_prep.tiling_handler import *
 # define the folder paths
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'branch/control/ground/constant/'
-FILE_NAME = 'starfield_image-'
+FILE_NAME = 'deep_starfield_image-'
 
 SAMPLE_HEADER = '%sutils/sample.fits' \
                 % ROOT_PATH
