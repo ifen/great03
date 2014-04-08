@@ -12,7 +12,7 @@ LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'branch/control/ground/constant/'
-FILE_NAME = 'deep_starfield_image-'
+FILE_NAME = 'starfield_image-'
 
 if len(sys.argv) > 1:
     NO_THREADS = 1
@@ -24,7 +24,7 @@ else:
 print '\n\n... configured with %d threads\n\n' % NO_THREADS
 
 PROCESS_START = 0
-PROCESS_FINISH = 1
+PROCESS_FINISH = 5
 
 TILE_SIZE = 2
 TILES_IMAGE = int(10. / TILE_SIZE)
@@ -104,7 +104,7 @@ class StarfieldSubtile:
 
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
-    branch_path = '%s%sstarfield-%03d/' % \
+    branch_path = '%s%s/sanity_check/%d/' % \
                   (ROOT_PATH,
                    BRANCH_PATH,
                    ID)
@@ -112,36 +112,29 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     tmp_env['SWARP_CONFIG'] = LENSFIT_PATH + 'swarp/create_coadd_swarp.swarp'
 
     file_list = '%sinput.asc' % branch_path
-    catalogue_path = '%s%03d.asc' % (branch_path, ID)
+    catalogue_path = '%simage0.asc' % branch_path
     log_path = '%s%03d.log' % (branch_path, ID)
 
-    makeopsf_exec = './makeospsf %s 0 none %d %s %s %03d %s > %s' % (file_list,
+    makeopsf_exec = './makeospsf %s 0 none %d %s %s image0 %s > %s' % (file_list,
                                                                      SNR_RATIO,
                                                                      branch_path,
                                                                      catalogue_path,
-                                                                     ID,
                                                                      branch_path,
                                                                      log_path)
     os.chdir(LENSFIT_SRC)
     os.system(makeopsf_exec)
 
-    shutil.move('%s%03d_ellipticities.log' % (LENSFIT_SRC,
-                                              ID),
+    shutil.move('%simage0_ellipticities.log' % LENSFIT_SRC,
                 '%s' % branch_path)
-    shutil.move('%s%03d_shifts.log' % (LENSFIT_SRC,
-                                       ID),
+    shutil.move('%simage0_shifts.log' % LENSFIT_SRC,
                 '%s' % branch_path)
-    shutil.move('%s%03d_stars.fits' % (LENSFIT_SRC,
-                                       ID),
+    shutil.move('%simage0_stars.fits' % LENSFIT_SRC,
                 '%s' % branch_path)
-    shutil.move('%s%03d_residuals.modelamp.fits' % (LENSFIT_SRC,
-                                                    ID),
+    shutil.move('%simage0_residuals.modelamp.fits' % LENSFIT_SRC,
                 '%s' % branch_path)
-    shutil.move('%s%03d_psf.fits' % (LENSFIT_SRC,
-                                     ID),
+    shutil.move('%simage0_psf.fits' % LENSFIT_SRC,
                 '%s' % branch_path)
-    shutil.move('%s%03d_fracresiduals.fits' % (LENSFIT_SRC,
-                                               ID),
+    shutil.move('%simage0_fracresiduals.fits' % LENSFIT_SRC,
                 '%s' % branch_path)
 
 print ' ... starting threaded run\n'

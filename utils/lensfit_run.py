@@ -5,10 +5,7 @@ import os
 import datetime
 import time
 
-pydrizzle_path = '/home/ian/Downloads/Ureka/python/lib/python2.7/site-packages/pydrizzle'
-if pydrizzle_path in sys.path:
-    sys.path.remove(pydrizzle_path)
-sys.path.append('/home/ian/PycharmProjects/great03/')
+sys.path.append('/home/ian/Documents/GITHUB/great03/')
 
 from galaxy_prep.convert_xy import *
 from galaxy_prep.prepare_header import *
@@ -31,7 +28,7 @@ use_tiles = 0
 pad_size = 20
 crop_size = 48
 RANGE_START = 0
-RANGE_END = 200
+RANGE_END = 1
 
 # SET ROOT PATHS FOR G3 AND LENSFIT
 great3_folder_root = '/home/ian/Documents/GREAT03/'
@@ -169,7 +166,7 @@ for ID in range(RANGE_START, RANGE_END):
 
         # prepare header with the correct WCS values
         prepare_header(path_offsets, path_dither,
-                       path_padded, path_save, ID)
+                       path_padded, path_save, 0)
 
         # re-write the table data to match centroid
         # this caters for the G3 conventions

@@ -9,12 +9,12 @@ from star_prep.tiling_handler import *
 # define the folder paths
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'branch/control/ground/constant/'
-FILE_NAME = 'deep_starfield_image-'
+FILE_NAME = 'starfield_image-'
 
 SAMPLE_HEADER = '%sutils/sample.fits' \
                 % ROOT_PATH
 PROCESS_START = 0
-PROCESS_FINISH = 1
+PROCESS_FINISH = 15
 
 POSTAGE_SIZE = 48
 
@@ -45,20 +45,20 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     starfield_image.image_data = load_grid_image(starfield_image.file_path)
 
     # save paths.
-    save_directory = '%sstarfield-%03d/' % (branch_collection.branch_path,
-                                            starfield_image.image_id)
+    save_directory = '%ssanity_check/%d/' % (branch_collection.branch_path,
+                                                starfield_image.image_id)
 
-    save_image = '%s%03d.fits' % (save_directory, starfield_image.image_id)
+    save_image = '%simage0.fits' % save_directory
 
-    save_catalogue_path_before = '%s%03d.before.asc' % (save_directory, starfield_image.image_id)
+    save_catalogue_path_before = '%simage0.before.asc' % save_directory
 
-    save_catalogue_path = '%s%03d.asc' % (save_directory, starfield_image.image_id)
+    save_catalogue_path = '%simage0.asc' % save_directory
 
-    save_table_path = '%s%03d.table.fits' % (save_directory, starfield_image.image_id)
+    save_table_path = '%simage0.table.fits' % save_directory
 
-    save_head_path = '%s%03d.head' % (save_directory, starfield_image.image_id)
+    save_head_path = '%simage0.head' % save_directory
 
-    save_placeholder_path = '%s%03d.placeholder.fits' % (save_directory, starfield_image.image_id)
+    save_placeholder_path = '%simage0.placeholder.fits' % save_directory
 
     branch_collection.images.append(starfield_image)
 
@@ -104,7 +104,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     write_headfile_star(save_head_path,
                         save_image)
 
-    write_input_file('%sinput.asc' % save_directory, '%03d' % starfield_image.image_id)
+    write_input_file('%sinput.asc' % save_directory, 'image0')
 
 
 
