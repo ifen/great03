@@ -3,7 +3,7 @@ __author__ = 'Ian Fenech Conti'
 import pyfits
 
 
-def prepare_header(offset_path, dither_path, original_path, save_path):
+def prepare_header(offset_path, dither_path, original_path, save_path, ID):
 
     """
     @param offset_path: file offset
@@ -47,8 +47,12 @@ def prepare_header(offset_path, dither_path, original_path, save_path):
     # APPEND ADDITIONAL LENSFIT PARAMATERS
     prihdr.set('RADECSYS', 'FK5     ')
 
-    prihdr.set('CRVAL1', 3.450000000E+01)
-    prihdr.set('CRVAL2', -7.000000000E+00)
+    CRVAL1 = 3.450000000E+01 + (ID * 0.28)
+    CRVAL2 = 0.000000000E+00
+    # CRVAL2 = -7.000000000E+00 + (ID * 0.5)
+
+    prihdr.set('CRVAL1', CRVAL1)
+    prihdr.set('CRVAL2', CRVAL2)
 
     # prihdr.set('CRVAL1', 0.000000000E+00)
     # prihdr.set('CRVAL2', 0.000000000E+00)

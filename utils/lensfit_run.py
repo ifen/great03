@@ -23,12 +23,15 @@ from star_prep.crop_psf import *
 file_handling = 1
 lensfit_run = 1
 exec_run = 1
-lensfit_read = 1
-run_plots = 1
+lensfit_read = 0
+run_plots = 0
 use_tiles = 0
 
-# START TIMER
-time_start = time.time()
+# DEFINE RUNTIME PARAMATERS
+pad_size = 20
+crop_size = 48
+RANGE_START = 0
+RANGE_END = 200
 
 # SET ROOT PATHS FOR G3 AND LENSFIT
 great3_folder_root = '/home/ian/Documents/GREAT03/'
@@ -45,246 +48,249 @@ else:
 great3_branch = great3_folder_root + great3_branch
 great3_branch_type = great3_branch + great3_branch_type
 
-# SET PREP/OUTPUT FOLDERS
-great3_prep = great3_branch_type + 'run/prep_noise_12n/'
-great3_out = great3_branch_type + 'run/out_noise_12n/'
+for ID in range(RANGE_START, RANGE_END):
 
-# SET TILE FOLDER
-great3_tile = great3_prep + ''
+    # START TIMER
+    time_start = time.time()
 
-# SET LENSIFT SOURCE FOLDER
-lensfit_source = lensfit_folder_root + 'src/'
+    # SET PREP/OUTPUT FOLDERS
+    great3_prep = great3_folder_root + 'full_run/%d/' % ID
+    great3_out = great3_branch_type + 'final/%d/out' % ID
 
-# SET PATH TO SWARP FILE
-path_swarp = 'swarp/create_coadd_swarp.swarp'
+    # SET TILE FOLDER
+    great3_tile = great3_prep + ''
 
-# SETUP LENSFIT ARGUMENT FILES
-args_input_name = 'file_list.asc'
-date_time = datetime.datetime.now()
-date_time_string = date_time.strftime("%d.%m.%y.%I.%M.%S")
-args_output_name = 'output.' + date_time_string + '.fits'
-args_output_read_name = 'output.' + date_time_string + '.asc'
+    # SET LENSIFT SOURCE FOLDER
+    lensfit_source = lensfit_folder_root + 'src/'
 
-# SET PATHS TO INPUT DATA
-path_dither = great3_branch + 'deep_epoch_dither-000-0.txt'
-path_offsets = great3_branch + 'deep_subfield_offset-000.txt'
-path_catalogue = great3_branch + 'deep_galaxy_catalog-000.fits'
-path_original_starfield = great3_branch + 'deep_starfield_image-000-0.fits'
-path_original = great3_branch + 'deep_image-000-0.fits'
+    # SET PATH TO SWARP FILE
+    path_swarp = 'swarp/create_coadd_swarp.swarp'
 
-# DEFINE ITEM NAMES TO SAVE
-image_name = 'image0'
-catalogue_name = 'catalog0'
-starfield_name = 'starfield0'
+    # SETUP LENSFIT ARGUMENT FILES
+    args_input_name = 'file_list.asc'
+    date_time = datetime.datetime.now()
+    date_time_string = date_time.strftime("%d.%m.%y.%I.%M.%S")
+    args_output_name = 'output.' + date_time_string + '.fits'
+    args_output_read_name = 'output.' + date_time_string + '.asc'
 
-# SET SAVE PATHS FOR PREP. ITEMS
-path_padded = great3_prep + image_name + '.pad.fits'
-path_new = great3_prep + image_name + '.fits[0]'
-path_save = great3_prep + image_name + '.fits'
-path_coeff = great3_prep + image_name + '.psfcoeffs.fits'
-path_catalogue_deg = great3_prep + catalogue_name + '.fits'
-path_catalogue_deg_asc = great3_prep + image_name + '.asc'
-path_asc = great3_prep + image_name + '.asc'
-path_headfile = great3_prep + image_name + '.head'
-path_save_starfield = great3_prep + starfield_name + '.crop.fits'
-path_imagefilelist = great3_prep + args_input_name
+    # SET PATHS TO INPUT DATA
+    path_dither = great3_branch + 'epoch_dither-%03d-0.txt' % ID
+    path_offsets = great3_branch + 'subfield_offset-%03d.txt' % ID
+    path_catalogue = great3_branch + 'galaxy_catalog-%03d.fits' % ID
+    path_original_starfield = great3_branch + 'starfield_image-%03d-0.fits' % ID
+    path_original = great3_branch + 'image-%03d-0.fits' % ID
 
-# DEFINE RUNTIME PARAMATERS
-pad_size = 0
-crop_size = 48
+    # DEFINE ITEM NAMES TO SAVE
+    image_name = 'image0'
+    catalogue_name = 'catalog0'
+    starfield_name = 'starfield0'
 
-# BUILD PSF COEFF EXEC
-psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
+    # SET SAVE PATHS FOR PREP. ITEMS
+    path_padded = great3_prep + image_name + '.pad.fits'
+    path_new = great3_prep + image_name + '.fits[0]'
+    path_save = great3_prep + image_name + '.fits'
+    path_coeff = great3_prep + image_name + '.psfcoeffs.fits'
+    path_catalogue_deg = great3_prep + catalogue_name + '.fits'
+    path_catalogue_deg_asc = great3_prep + image_name + '.asc'
+    path_asc = great3_prep + image_name + '.asc'
+    path_headfile = great3_prep + image_name + '.head'
+    path_save_starfield = great3_prep + starfield_name + '.crop.fits'
+    path_imagefilelist = great3_prep + args_input_name
 
-# RUN LENSFIT COMMAND EXEC
-args_input = great3_prep + args_input_name
-args_output = great3_out + args_output_name
-args_extra = '48 1 1 12'
-lensfit_args = './flensfit'
-lensfit_args += ' ' + args_input + ' ' + args_output + ' ' + args_extra
+    # BUILD PSF COEFF EXEC
+    psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + path_coeff
 
-# RUN LENSFIT READ RESULTS EXEC
-readlensfit_args = './readlensfit'
-args_input_read = great3_out + args_output_name
-args_output_read = great3_out + args_output_read_name
-readlensfit_args += ' ' + args_input_read + ' ' + args_output_read
+    # RUN LENSFIT COMMAND EXEC
+    args_input = great3_prep + args_input_name
+    args_output = great3_out + args_output_name
+    args_extra = '48 1 1'
+    lensfit_args = './flensfit'
+    lensfit_args += ' ' + args_input + ' ' + args_output + ' ' + args_extra
 
-# SETUP ENVIRONMENT DATA
-envdata_datadir = great3_prep
-envdata_headdir = great3_prep
-envdata_psfdir = great3_prep
-envdata_cataloguedir = path_catalogue_deg_asc
-envdata_swarpconfig = lensfit_folder_root + path_swarp
+    # RUN LENSFIT READ RESULTS EXEC
+    readlensfit_args = './readlensfit'
+    args_input_read = great3_out + args_output_name
+    args_output_read = great3_out + args_output_read_name
+    readlensfit_args += ' ' + args_input_read + ' ' + args_output_read
 
-print '  branch location : %s' % great3_branch_type
-print '  using tiles : %d' % use_tiles
+    # SETUP ENVIRONMENT DATA
+    envdata_datadir = great3_prep
+    envdata_headdir = great3_prep
+    envdata_psfdir = great3_prep
+    envdata_cataloguedir = path_catalogue_deg_asc
+    envdata_swarpconfig = lensfit_folder_root + path_swarp
 
-if file_handling:
-    # FILE HANDLING
-    if not os.path.isdir(great3_branch_type):
-        print '  prep dir does not exist\n'
-        print '  creating prep dir'
-        os.makedirs(great3_prep)
+    # print '  branch location : %s' % great3_branch_type
+    # print '  using tiles : %d' % use_tiles
 
-    if not os.path.isdir(great3_prep):
-        print '  prep dir does not exist\n'
-        print '  creating prep dir'
-        os.makedirs(great3_prep)
+    if file_handling:
+        # FILE HANDLING
+        if not os.path.isdir(great3_branch_type):
+            # print '  prep dir does not exist\n'
+            # print '  creating prep dir'
+            os.makedirs(great3_prep)
 
-    if not os.path.isdir(great3_tile):
-        print '  tile dir does not exist\n'
-        print '  creating tile dir'
-        os.makedirs(great3_tile)
+        if not os.path.isdir(great3_prep):
+            # print '  prep dir does not exist\n'
+            # print '  creating prep dir'
+            os.makedirs(great3_prep)
 
-    if not os.path.isdir(great3_out):
-        print '  out dir does not exist\n'
-        print '  creating out dir'
-        os.makedirs(great3_out)
+        if not os.path.isdir(great3_tile):
+            # print '  tile dir does not exist\n'
+            # print '  creating tile dir'
+            os.makedirs(great3_tile)
 
-if lensfit_run:
-    # START THE CONVERSION CODE
+        # if not os.path.isdir(great3_out):
+        #     print '  out dir does not exist\n'
+        #     print '  creating out dir'
+        #     os.makedirs(great3_out)
 
-    # log the start time.
-    print '  lensfit run started at : ' + str(datetime.datetime.now())
+    if lensfit_run:
+        # START THE CONVERSION CODE
 
-    # remove the previous prep. data from the
-    # folder and replace with new data.
-    print '  emptying dir'
-    os.chdir(great3_prep)
-    os.system('rm -f *')
+        # log the start time.
+        # print '  lensfit run started at : ' + str(datetime.datetime.now())
 
-    # crop the perfectly centered PSF from the starfield
-    # postagestamp and save it.
-    crop_psf(path_original_starfield,
-             path_save_starfield,
-             crop_size)
+        # remove the previous prep. data from the
+        # folder and replace with new data.
+        # print '  emptying dir'
+        os.chdir(great3_prep)
+        os.system('rm -f *')
 
-    # pad the image in order to cater for galaxies on the
-    # edges. padding will be 0 values.
-    pad_image(path_original, path_padded, pad_size)
+        # crop the perfectly centered PSF from the starfield
+        # postagestamp and save it.
+        crop_psf(path_original_starfield,
+                 path_save_starfield,
+                 crop_size)
 
-    # prepare header with the correct WCS values
-    prepare_header(path_offsets, path_dither,
-                   path_padded, path_save)
+        # pad the image in order to cater for galaxies on the
+        # edges. padding will be 0 values.
+        pad_image(path_original, path_padded, pad_size)
 
-    # re-write the table data to match centroid
-    # this caters for the G3 conventions
-    set_tabledata(path_catalogue,
-                  path_catalogue_deg, pad_size)
+        # prepare header with the correct WCS values
+        prepare_header(path_offsets, path_dither,
+                       path_padded, path_save, ID)
 
-    # convert cords. from pixel to dec/ra and save.
-    convert(path_new,
-            path_catalogue_deg,
-            path_asc,
-            False)
+        # re-write the table data to match centroid
+        # this caters for the G3 conventions
+        set_tabledata(path_catalogue,
+                      path_catalogue_deg, pad_size)
 
-    if use_tiles:
-        # write the tile names acii file with the image name.
-        tile_names = tile_image(path_save,
-                                great3_tile,
-                                'ground')
-        write_imagefile_tiles(path_imagefilelist,
-                              tile_names)
-        write_headfile_tiles(great3_tile,
-                             tile_names)
-    else:
-        # write the acii file with the image name.
-        write_imagefile(path_imagefilelist,
-                        image_name)
-         # write lensift's .head file with WCS props.
-        write_headfile(path_headfile, path_save)
+        # convert cords. from pixel to dec/ra and save.
+        convert(path_new,
+                path_catalogue_deg,
+                path_asc,
+                True)
 
-    if exec_run:
-        # DEBUGGING THE FILENAMES/ EXEC PATHS
-        print '  debugging args\n'
-        print lensfit_args
-        print readlensfit_args
-        print psfcoeff_args
-
-        print '\n\n  debugging env_variables\n'
-        print envdata_datadir
-        print envdata_headdir
-        print envdata_psfdir
-        print envdata_cataloguedir
-        print envdata_swarpconfig
-
-        # RUN LENSFIT
-        print '\n\n  preparing to start lensfit\n'
-
-        os.chdir(great3_folder_root + '/utils/')
         if use_tiles:
-            for tile_name in tile_names:
-                tile_name_path = '%s/%s.psfcoeffs.fits' % \
-                                 (great3_tile,
-                                  tile_name)
-                psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + tile_name_path
-                os.system(psfcoeff_args)
+            # write the tile names acii file with the image name.
+            tile_names = tile_image(path_save,
+                                    great3_tile,
+                                    'ground')
+            write_imagefile_tiles(path_imagefilelist,
+                                  tile_names)
+            write_headfile_tiles(great3_tile,
+                                 tile_names)
         else:
-            os.system(psfcoeff_args)
+            # write the acii file with the image name.
+            write_imagefile(path_imagefilelist,
+                            image_name)
+             # write lensift's .head file with WCS props.
+            write_headfile(path_headfile, path_save)
 
-        os.chdir(lensfit_source)
+        if exec_run:
+            # DEBUGGING THE FILENAMES/ EXEC PATHS
+            # print '  debugging args\n'
+            # print lensfit_args
+            # print readlensfit_args
+            # print psfcoeff_args
+            #
+            # print '\n\n  debugging env_variables\n'
+            # print envdata_datadir
+            # print envdata_headdir
+            # print envdata_psfdir
+            # print envdata_cataloguedir
+            # print envdata_swarpconfig
 
-        # write environment variables to system os
-        # lensift needs these in order to run.
-        os.environ['SWARP_CONFIG'] = envdata_swarpconfig
-        os.environ['HEAD_DIR'] = envdata_headdir
-        os.environ['PSF_DIR'] = envdata_psfdir
-        os.environ['CATALOGUE_GALAXIES'] = envdata_cataloguedir
-        os.environ['DATA_DIR'] = envdata_datadir
+            # RUN LENSFIT
+            # print '\n\n  preparing to start lensfit\n'
 
-        os.system(lensfit_args)
+            os.chdir(great3_folder_root + '/utils/')
+            if use_tiles:
+                for tile_name in tile_names:
+                    tile_name_path = '%s/%s.psfcoeffs.fits' % \
+                                     (great3_tile,
+                                      tile_name)
+                    psfcoeff_args = './psfimage2coeffs ' + path_save_starfield + ' ' + tile_name_path
+                    os.system(psfcoeff_args)
+            else:
+                os.system(psfcoeff_args)
 
-if lensfit_read:
-    # CONVERT OUTPUTS TO ASCII TABLE
-    os.system(readlensfit_args)
+            os.chdir(lensfit_source)
 
-# END TIMER
-time_end = time.time()
-time_length = time_end - time_start
+            # exit(0)
 
-m, s = divmod(time_length, 60)
-h, m = divmod(m, 60)
-run_time = "%d:%02d:%d" % (h, m, s)
+            # write environment variables to system os
+            # lensift needs these in order to run.
+            # os.environ['SWARP_CONFIG'] = envdata_swarpconfig
+            # os.environ['HEAD_DIR'] = envdata_headdir
+            # os.environ['PSF_DIR'] = envdata_psfdir
+            # os.environ['CATALOGUE_GALAXIES'] = envdata_cataloguedir
+            # os.environ['DATA_DIR'] = envdata_datadir
+            #
+            # os.system(lensfit_args)
 
-print '  lensfit run-time was : ' + run_time
+    if lensfit_read:
+        # CONVERT OUTPUTS TO ASCII TABLE
+        os.system(readlensfit_args)
 
-if run_plots:
-    # PLOT THE RESULTS FOR ANALYSIS
-    results_path = args_output_read
-    # results_path = '/home/ian/Documents/GREAT03/0/deep/out/output.17.02.14.09.12.12.asc'
+    # END TIMER
+    time_end = time.time()
+    time_length = time_end - time_start
 
-    plot_path = great3_out+date_time_string + '/'
-    os.makedirs(plot_path)
+    m, s = divmod(time_length, 60)
+    h, m = divmod(m, 60)
+    run_time = "%d:%02d:%d" % (h, m, s)
 
-    path_1 = plot_attribute(results_path,
-                            'E1', 'E2', plot_path)
-    path_2 = plot_attribute(results_path,
-                            'SCALE_LENGTH', 'MEAN_LIKELIHOOD_E', plot_path)
-    path_3 = plot_attribute(results_path,
-                            'MODEL_SN_RATIO', 'SCALE_LENGTH', plot_path)
-    path_4 = plot_attribute(results_path,
-                            'MODEL_SN_RATIO', 'BULGE_FRACTION', plot_path)
+    print ' conversion done lensfit run-time was : ' + run_time
 
-    proc_galaxies = processed_galaxies(results_path)
+    if run_plots:
+        # PLOT THE RESULTS FOR ANALYSIS
+        results_path = args_output_read
+        # results_path = '/home/ian/Documents/GREAT03/0/deep/out/output.17.02.14.09.12.12.asc'
 
-    # body_of_email can be plaintext or html!
-    content = "\r\n\r\n" + 'Dear Ian, <br /><br />'  \
-              'Your Lensfit Run Has Completed with ID (' + date_time_string + ').<br />' \
-              'No. Processed Galaxies : ' + str(proc_galaxies) + '<br />' \
-              'Execution Time Was : ' + run_time + '<br /><br />' \
-              'Best Regards,<br /><br />Lensfit Bot'
+        plot_path = great3_out+date_time_string + '/'
+        os.makedirs(plot_path)
 
-    email_results('Lensifit Run (' + date_time_string + ') Complete',
-                  'ianfc89@gmail.com',
-                  'ianfc89@gmail.com',
-                  content,
-                  [path_1,
-                  path_2,
-                  path_3,
-                  path_4])
+        path_1 = plot_attribute(results_path,
+                                'E1', 'E2', plot_path)
+        path_2 = plot_attribute(results_path,
+                                'SCALE_LENGTH', 'MEAN_LIKELIHOOD_E', plot_path)
+        path_3 = plot_attribute(results_path,
+                                'MODEL_SN_RATIO', 'SCALE_LENGTH', plot_path)
+        path_4 = plot_attribute(results_path,
+                                'MODEL_SN_RATIO', 'BULGE_FRACTION', plot_path)
 
-    # plt.show()
-    # raw_input("Press Enter to close...")
+        proc_galaxies = processed_galaxies(results_path)
+
+        # body_of_email can be plaintext or html!
+        content = "\r\n\r\n" + 'Dear Ian, <br /><br />'  \
+                  'Your Lensfit Run Has Completed with ID (' + date_time_string + ').<br />' \
+                  'No. Processed Galaxies : ' + str(proc_galaxies) + '<br />' \
+                  'Execution Time Was : ' + run_time + '<br /><br />' \
+                  'Best Regards,<br /><br />Lensfit Bot'
+
+        email_results('Lensifit Run (' + date_time_string + ') Complete',
+                      'ianfc89@gmail.com',
+                      'ianfc89@gmail.com',
+                      content,
+                      [path_1,
+                      path_2,
+                      path_3,
+                      path_4])
+
+        # plt.show()
+        # raw_input("Press Enter to close...")
 
 
 
