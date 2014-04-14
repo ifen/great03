@@ -10,11 +10,13 @@ lensfit_folder_root = '/home/ian/Downloads/correction_code/'
 
 
 for ID in range(RANGE_START, RANGE_END):
-    asci_path = '%soutputs_final/%d/final.asc' % (great3_folder_root, ID)
-    log_path = '%soutputs_final/%d/out.log' % (great3_folder_root, ID)
-
-    readlensfit_args = './applyG3noisebias %s /home/ian/Downloads/correction_code/alphabeta7.dat > %s' % (asci_path, log_path)
-    print readlensfit_args
-
-    os.chdir(lensfit_folder_root)
-    os.system(readlensfit_args)
+    root_path = '%sdata/outputs/%d/' % (great3_folder_root, ID)
+    for file in os.listdir(root_path):
+        if file.endswith(".asc"):
+            asci_path = '%s%s' % (root_path, file)
+            log_path = '%s/out2.log' % root_path
+            readlensfit_args = './applyG3noisebias %s /home/ian/Downloads/correction_code/alphabeta7.dat > %s' % (asci_path, log_path)
+            os.chdir(lensfit_folder_root)
+            os.system(readlensfit_args)
+            # b = os.path.getsize(asci_path)
+            # print b

@@ -14,22 +14,20 @@ weighted_correction = []
 fo = open("/home/ian/Documents/GREAT03/sub_2.txt", "wb")
 
 for ID in range(RANGE_START, RANGE_END):
-    log_path = '%soutputs_final/%d/out.log' % (great3_folder_root, ID)
+    log_path = '%sarchive/outputs_first_submission/%d/out.log' % (great3_folder_root, ID)
     shakes = open(log_path, "r")
 
     for line in shakes:
-        if re.match("(.*)mean weighted, corrected shear(.*)", line):
-            #print
-            #val = re.findall("\d+.\d+", line)
-            #weighted_correction.append('%s %s' % (val[0], val[1]))
-            g1 = line.split()[4]
-            g2 = line.split()[5]
-            #print '%s %s' % (g1, g2)
-            #if tmp < 9950:
-                #print ' **WARNING : %d with %d galaxies ' % (ID, tmp)
-            #weighted_correction.append(tmp)
-            fo.write('%03d %s %s\n' % (ID, g1, g2))
-            # print val[0]
+        if re.match("(.*)weighted correction factor applied(.*)", line):
+
+            # # g1 and g2
+            # g1 = line.split()[4]
+            # g2 = line.split()[5]
+            # fo.write('%03d %s %s\n' % (ID, g1, g2))
+
+            # weighted correlation applied
+            wcf = line.split()[4]
+            fo.write('%03d %s\n' % (ID, wcf))
 
     # print max(weighted_correction)
 

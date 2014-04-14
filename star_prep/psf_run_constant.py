@@ -7,6 +7,8 @@ import Queue
 from threading import Thread, current_thread
 from time import gmtime, strftime
 
+# APPEND THE GREAT03 CODE REPOSITORY
+sys.path.append('/home/ian/Documents/GITHUB/great03/')
 
 LENSFIT_PATH = '/home/ian/Documents/LENSFIT/'
 LENSFIT_SRC = '%ssrc/' % LENSFIT_PATH
@@ -21,10 +23,12 @@ else:
     NO_THREADS = 1
     FIT_ORDER = 3
 
-print '\n\n... configured with %d threads\n\n' % NO_THREADS
+PROCESS_START = 2
+PROCESS_FINISH = 3
 
-PROCESS_START = 0
-PROCESS_FINISH = 5
+SAVE_TYPE = 'image0'
+
+print '...starting PSF conversion range (%d, %d) with name : %s' % (PROCESS_START, PROCESS_FINISH, SAVE_TYPE)
 
 TILE_SIZE = 2
 TILES_IMAGE = int(10. / TILE_SIZE)
@@ -65,46 +69,9 @@ class StarfieldSubtile:
                                       _tile_y))
 
 
-        # def makeospsf():
-        # tmp_env = os.environ
-        # tmp_env['SWARP_CONFIG'] = LENSFIT_PATH + 'swarp/create_coadd_swarp.swarp'
-        #
-        # makeopsf_exec = './makeospsf %s %d none %d %s %s %s %s > %s' % (subtile_object.file_list,
-        #                                                                 FIT_ORDER,
-        #                                                                 SNR_RATIO,
-        #                                                                 subtile_object.path,
-        #                                                                 subtile_object.catalogue_path,
-        #                                                                 subtile_object.tile_id,
-        #                                                                 subtile_object.path,
-        #                                                                 subtile_object.log_path)
-        # os.chdir(LENSFIT_SRC)
-        # os.system(makeopsf_exec)
-
-        # shutil.move('%s%s_ellipticities.log' % (LENSFIT_SRC,
-        #                                         subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-        # shutil.move('%s%s_shifts.log' % (LENSFIT_SRC,
-        #                                  subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-        # shutil.move('%s%s_stars.fits' % (LENSFIT_SRC,
-        #                                  subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-        # shutil.move('%s%s_residuals.modelamp.fits' % (LENSFIT_SRC,
-        #                                               subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-        # shutil.move('%s%s_psf.fits' % (LENSFIT_SRC,
-        #                                subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-        # shutil.move('%s%s_fracresiduals.fits' % (LENSFIT_SRC,
-        #                                          subtile_object.tile_id),
-        #             '%s' % subtile_object.path)
-
-        # print '     ... (thread %s) run complete on %s\n' % (current_thread().name,
-        #                                                      subtile_object.tile_id)
-
-
 for ID in range(PROCESS_START, PROCESS_FINISH):
-    branch_path = '%s%s/sanity_check/%d/' % \
+    print '  processing image %d.' % ID
+    branch_path = '%s%scontrol_ground_constant_run/%d/' % \
                   (ROOT_PATH,
                    BRANCH_PATH,
                    ID)
@@ -112,33 +79,31 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     tmp_env['SWARP_CONFIG'] = LENSFIT_PATH + 'swarp/create_coadd_swarp.swarp'
 
     file_list = '%sinput.asc' % branch_path
-    catalogue_path = '%simage0.asc' % branch_path
+    catalogue_path = '%s%s.asc' % (branch_path, SAVE_TYPE)
     log_path = '%s%03d.log' % (branch_path, ID)
 
-    makeopsf_exec = './makeospsf %s 0 none %d %s %s image0 %s > %s' % (file_list,
+    makeopsf_exec = './makeospsf %s 0 none %d %s %s %s %s > %s' % (file_list,
                                                                      SNR_RATIO,
                                                                      branch_path,
                                                                      catalogue_path,
+								     SAVE_TYPE,
                                                                      branch_path,
                                                                      log_path)
     os.chdir(LENSFIT_SRC)
     os.system(makeopsf_exec)
 
-    shutil.move('%simage0_ellipticities.log' % LENSFIT_SRC,
+    shutil.move('%s%s_ellipticities.log' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
-    shutil.move('%simage0_shifts.log' % LENSFIT_SRC,
+    shutil.move('%s%s_shifts.log' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
-    shutil.move('%simage0_stars.fits' % LENSFIT_SRC,
+    shutil.move('%s%s_stars.fits' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
-    shutil.move('%simage0_residuals.modelamp.fits' % LENSFIT_SRC,
+    shutil.move('%s%s_residuals.modelamp.fits' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
-    shutil.move('%simage0_psf.fits' % LENSFIT_SRC,
+    shutil.move('%s%s_psf.fits' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
-    shutil.move('%simage0_fracresiduals.fits' % LENSFIT_SRC,
+    shutil.move('%s%s_fracresiduals.fits' % (LENSFIT_SRC,SAVE_TYPE),
                 '%s' % branch_path)
+    print '  psf model created.'
 
-print ' ... starting threaded run\n'
-print strftime("%Y-%m-%d %H:%M:%S\n\n", gmtime())
-
-print '\n   ... all items processed'
-print strftime("  %Y-%m-%d %H:%M:%S\n", gmtime())
+print '... psf model branch complete.'

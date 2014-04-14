@@ -2,6 +2,10 @@ __author__ = 'Ian Fenech Conti'
 
 import shutil
 import copy
+import sys
+
+# APPEND THE GREAT03 CODE REPOSITORY
+sys.path.append('/home/ian/Documents/GITHUB/great03/')
 
 from star_prep.psf_handler import *
 from star_prep.tiling_handler import *
@@ -13,8 +17,10 @@ FILE_NAME = 'starfield_image-'
 
 SAMPLE_HEADER = '%sutils/sample.fits' \
                 % ROOT_PATH
-PROCESS_START = 0
-PROCESS_FINISH = 15
+PROCESS_START = 2
+PROCESS_FINISH = 3
+
+SAVE_TYPE = 'image0'
 
 POSTAGE_SIZE = 48
 
@@ -45,20 +51,20 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     starfield_image.image_data = load_grid_image(starfield_image.file_path)
 
     # save paths.
-    save_directory = '%ssanity_check/%d/' % (branch_collection.branch_path,
+    save_directory = '%scontrol_ground_constant_run/%d/' % (branch_collection.branch_path,
                                                 starfield_image.image_id)
 
-    save_image = '%simage0.fits' % save_directory
+    save_image = '%s%s.fits' % (save_directory, SAVE_TYPE)
 
-    save_catalogue_path_before = '%simage0.before.asc' % save_directory
+    save_catalogue_path_before = '%s%s.before.asc' % (save_directory, SAVE_TYPE)
 
-    save_catalogue_path = '%simage0.asc' % save_directory
+    save_catalogue_path = '%s%s.asc' % (save_directory, SAVE_TYPE)
 
-    save_table_path = '%simage0.table.fits' % save_directory
+    save_table_path = '%s%s.table.fits' % (save_directory, SAVE_TYPE)
 
-    save_head_path = '%simage0.head' % save_directory
+    save_head_path = '%s%s.head' % (save_directory, SAVE_TYPE)
 
-    save_placeholder_path = '%simage0.placeholder.fits' % save_directory
+    save_placeholder_path = '%s%s.placeholder.fits' % (save_directory, SAVE_TYPE)
 
     branch_collection.images.append(starfield_image)
 
@@ -104,7 +110,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     write_headfile_star(save_head_path,
                         save_image)
 
-    write_input_file('%sinput.asc' % save_directory, 'image0')
+    write_input_file('%sinput.asc' % save_directory, '%s' % SAVE_TYPE)
 
 
 
