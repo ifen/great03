@@ -51,7 +51,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     starfield_image.image_data = load_grid_image(starfield_image.file_path)
 
     # save paths.
-    save_directory = '%scontrol_ground_constant_run/%d/' % (branch_collection.branch_path,
+    save_directory = '%scgc_run/%d/' % (branch_collection.branch_path,
                                                 starfield_image.image_id)
 
     save_image = '%s%s.fits' % (save_directory, SAVE_TYPE)

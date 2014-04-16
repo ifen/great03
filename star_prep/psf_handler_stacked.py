@@ -34,6 +34,7 @@ class StarfieldSubField:
         self.tiles = []
         self.image_data = []
         self.starfield_tiles = []
+        self.starfield_catalogue = []
 
 
 class StarfieldTile:

@@ -71,7 +71,7 @@ class StarfieldSubtile:
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
     print '  processing image %d.' % ID
-    branch_path = '%s%scontrol_ground_constant_run/%d/' % \
+    branch_path = '%s%scgc_run/%d/' % \
                   (ROOT_PATH,
                    BRANCH_PATH,
                    ID)

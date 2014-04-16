@@ -9,6 +9,7 @@ import copy
 import pydrizzle.xytosky as xy_conv
 # from scipy.spatial import Delaunay
 import matplotlib.delaunay as triang
+import time
 
 from pyfits import Column
 from decimal import *
@@ -110,25 +111,34 @@ def get_starfield_images_tile_constant(catalogue_path):
     return starfield_images
 
 
-def get_starfield_images_tile_offset(catalogue_path, tile_index_x, tile_index_y, offset_x, offset_y):
-
-    starfield_images = []
-
+def get_starfield_catalogue_data(catalogue_path):
     f = pyfits.open(catalogue_path)
     table_data = f[1].data
+    return table_data.base
 
-    for starfield_position in table_data.base:
-        starfield_data = starfield_position
-        if starfield_data[2] == tile_index_x and starfield_data[3] == tile_index_y:
-            starfield_data[4] += offset_x
-            starfield_data[5] += offset_y
-            starfield_data[6] += offset_x
-            starfield_data[7] += offset_y
-            starfield_images.append(starfield_data)
 
-    starfield_images.sort(key=lambda tup: (tup[4], tup[5]))
+# def get_starfield_images_tile_offset(catalogue_path, tile_index_x, tile_index_y, offset_x, offset_y):
+def get_starfield_images_tile_offset(all_positions, tile_index_x, tile_index_y, offset_x, offset_y):
+    # f = pyfits.open(catalogue_path)
+    # table_data = f[1].data
 
-    return starfield_images
+    # starfield_images = []
+    # for starfield_position in table_data.base:
+    #     starfield_data = starfield_position
+    #     if starfield_data[2] == tile_index_x and starfield_data[3] == tile_index_y:
+    #         starfield_data[4] += offset_x
+    #         starfield_data[5] += offset_y
+    #         starfield_data[6] += offset_x
+    #         starfield_data[7] += offset_y
+    #         starfield_images.append(starfield_data)
+    #
+    # starfield_images.sort(key=lambda tup: (tup[4], tup[5]))
+
+    fast_table = numpy.array(copy.deepcopy(all_positions))
+    starfield_images_fast = [t for t in fast_table if t[2] == tile_index_x and t[3] == tile_index_y]
+    starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
+
+    return starfield_images_fast
 
 
 def get_starfield_images_tile_2(catalogue_path, tile_index_x, tile_index_y, overlap):
@@ -196,41 +206,45 @@ def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, over
 
     # print 'x (%f : %f) y (%f : %f) ' % (x_start_deg, x_end_deg, y_start_deg, y_end_deg)
 
-    for starfield_position in stars:
-        starfield_data = starfield_position
-        if (x_start_deg <= starfield_data[6] < x_end_deg) and (y_start_deg <= starfield_data[7] < y_end_deg):
-            stars_in_subtile.append(starfield_data)
+    fast_table = numpy.array(copy.deepcopy(stars))
+    starfield_images_fast = [t for t in stars if (x_start_deg <= t[6] < x_end_deg) and (y_start_deg <= t[7] < y_end_deg)]
+    starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
 
-    stars_in_subtile.sort(key=lambda tup: (tup[4], tup[5]))
-    res = stars_in_subtile
+    # for starfield_position in stars:
+    #     starfield_data = starfield_position
+    #     if (x_start_deg <= starfield_data[6] < x_end_deg) and (y_start_deg <= starfield_data[7] < y_end_deg):
+    #         stars_in_subtile.append(starfield_data)
+
+    # stars_in_subtile.sort(key=lambda tup: (tup[4], tup[5]))
+    # res = stars_in_subtile
 
     # display_tile(res)
 
-    return res
+    return starfield_images_fast
 
 
 def display_tile(tile, i):
     real_x_pos = []
     real_y_pos = []
-    real_tile = []
+    # real_tile = []
 
     for starfield_position in tile:
         real_x_pos.append((starfield_position[6] * 4800) / 10)
         real_y_pos.append((starfield_position[7] * 4800) / 10)
 
-        real_tile_x = starfield_position[2]
-        real_tile_y = starfield_position[3]
+        # real_tile_x = starfield_position[2]
+        # real_tile_y = starfield_position[3]
 
-        real_tile.append(i)
+        # real_tile.append(i)
 
-    plt.ylim([0, 270])
-    plt.xlim([0, 270])
+    plt.ylim([0, 4800])
+    plt.xlim([0, 4800])
     plt.title('Starfield - True Gridded Star Single Subfield')
     c = i/20.0
     print c
     plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
 
-    # plt.ion()
+    plt.ion()
     plt.draw()
     plt.show()
 
@@ -334,8 +348,7 @@ def regrid_tile_stacked(gridded_image, starfield_images, postage_stamp_size, off
 def save_grid(original_path, save_path, gridded_image):
 
     fits_hdu = pyfits.open(original_path)
-    fits_hdu[0].data = gridded_image
-
+    fits_hdu[0].data = gridded_image.astype(numpy.float32)
     fits_hdu.writeto(save_path)
 
 
@@ -467,17 +480,30 @@ def set_header_data(starfield_tile, starfield_subtile, galaxy_tile_image):
     fits_hdu = pyfits.open(galaxy_tile_image)
     galaxy_tile_header = fits_hdu[0].header
 
-    naxis_1 = galaxy_tile_header['NAXIS1']
-    naxis_2 = galaxy_tile_header['NAXIS2']
+    # naxis_1 = galaxy_tile_header['NAXIS1']
+    # naxis_2 = galaxy_tile_header['NAXIS2']
+
+    # set the default size of the entire field of view.
+    naxis_1 = 4800
+    naxis_2 = 4800
+
+    # set tile size
+    tile_size = 960
+    subtile_size = 240
 
     fits_hdu_starfield = pyfits.open(starfield_subtile.image_path)
     fits_hdu_starfield[0].header = galaxy_tile_header
 
-    tile_start_x = (starfield_tile.tile_x * naxis_1) / 10
-    tile_start_y = (starfield_tile.tile_y * naxis_1) / 10
+    # tile_start_x = (starfield_tile.tile_x * naxis_1) / 10
+    # tile_start_y = (starfield_tile.tile_y * naxis_2) / 10
+    tile_start_x = (starfield_tile.tile_x * tile_size)
+    tile_start_y = (starfield_tile.tile_y * tile_size)
 
-    subtile_start_x = (((starfield_subtile.tile_x*starfield_subtile.tile_size)*naxis_2) / 10)
-    subtile_start_y = (((starfield_subtile.tile_y*starfield_subtile.tile_size)*naxis_2) / 10)
+    # subtile_start_x = (((starfield_subtile.tile_x*starfield_subtile.tile_size)*naxis_1) / 10)
+    # subtile_start_y = (((starfield_subtile.tile_y*starfield_subtile.tile_size)*naxis_2) / 10)
+
+    subtile_start_x = (((starfield_subtile.tile_x*subtile_size)))
+    subtile_start_y = (((starfield_subtile.tile_y*subtile_size)))
 
     x_offset = naxis_1/2 - (tile_start_x + subtile_start_x)
     y_offset = naxis_2/2 - (tile_start_y + subtile_start_y)
