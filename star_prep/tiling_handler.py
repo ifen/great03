@@ -60,13 +60,14 @@ def display_tiles(catalogue_path):
 
 def load_grid_image(image_path):
 
-    fits_hdu = pyfits.open(image_path)
+    fits_hdu = pyfits.open(image_path, memmap=False)
     fits_image = fits_hdu[0].data
     return fits_image
 
 
 def get_star(grid_x, grid_y, grid_image):
     star_postage = grid_image[grid_y-23:grid_y+25, grid_x-23:grid_x+25]
+    # star_postage = numpy.zeros(shape=(48, 48))
     return star_postage
 
 
@@ -112,9 +113,9 @@ def get_starfield_images_tile_constant(catalogue_path):
 
 
 def get_starfield_catalogue_data(catalogue_path):
-    f = pyfits.open(catalogue_path)
+    f = pyfits.open(catalogue_path, memmap=False)
     table_data = f[1].data
-    return table_data.base
+    return copy.deepcopy(table_data)
 
 
 # def get_starfield_images_tile_offset(catalogue_path, tile_index_x, tile_index_y, offset_x, offset_y):
@@ -136,7 +137,8 @@ def get_starfield_images_tile_offset(all_positions, tile_index_x, tile_index_y, 
 
     fast_table = numpy.array(copy.deepcopy(all_positions))
     starfield_images_fast = [t for t in fast_table if t[2] == tile_index_x and t[3] == tile_index_y]
-    starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
+
+    # starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
 
     return starfield_images_fast
 
@@ -207,8 +209,8 @@ def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, over
     # print 'x (%f : %f) y (%f : %f) ' % (x_start_deg, x_end_deg, y_start_deg, y_end_deg)
 
     fast_table = numpy.array(copy.deepcopy(stars))
-    starfield_images_fast = [t for t in stars if (x_start_deg <= t[6] < x_end_deg) and (y_start_deg <= t[7] < y_end_deg)]
-    starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
+    starfield_images_fast = [t for t in fast_table if (x_start_deg <= t[6] < x_end_deg) and (y_start_deg <= t[7] < y_end_deg)]
+    # starfield_images_fast.sort(key=lambda tup: (tup[4], tup[5]))
 
     # for starfield_position in stars:
     #     starfield_data = starfield_position
@@ -237,16 +239,14 @@ def display_tile(tile, i):
 
         # real_tile.append(i)
 
-    plt.ylim([0, 4800])
-    plt.xlim([0, 4800])
+    plt.ylim([-1, 4801])
+    plt.xlim([-1, 4801])
     plt.title('Starfield - True Gridded Star Single Subfield')
-    c = i/20.0
-    print c
     plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
 
     plt.ion()
     plt.draw()
-    plt.show()
+    #plt.show()
 
 
 def display_tile_stacked(tile):
@@ -317,35 +317,79 @@ def regrid_tile(gridded_image, starfield_images, postage_stamp_size):
 
 
 def regrid_tile_stacked(gridded_image, starfield_images, postage_stamp_size, offset):
-
+    # print ' [ regrid ::',
     num_stars = len(starfield_images)
-    new_grid = numpy.zeros(shape=(postage_stamp_size, num_stars*postage_stamp_size))
+    # new_grid = numpy.zeros(shape=(postage_stamp_size, num_stars*postage_stamp_size))
 
     tmp_starfield_images = []
 
+    start_stacking = 1
+    fast_grid = []
+
+    t0 = time.time()
+    t0_t = 0
+    t1_t = 0
+    t2_t = 0
+
     for i, starfield_image in enumerate(starfield_images):
-        tmp_starfield = copy.copy(starfield_image)
+
+        t1_0 = time.time()
+        tmp_starfield = starfield_image
         x = tmp_starfield[0]
         y = tmp_starfield[1]
+        t1_1 = time.time()
+        # print '        %d %.3f ' % (i, (t1_1 - t1_0))
+        t1_t += (t1_1 - t1_0)
 
+        t0_0 = time.time()
         star = get_star(x, y, gridded_image)
+        t0_1 = time.time()
+        t0_t += (t0_1 - t0_0)
 
-        start = i * postage_stamp_size
-        end = i * postage_stamp_size + postage_stamp_size
+        # start = i * postage_stamp_size
+        # end = i * postage_stamp_size + postage_stamp_size
+        # # new_grid[0:postage_stamp_size, start:end] = star
 
-        new_grid[0:postage_stamp_size, start:end] = star
+        if start_stacking:
+            fast_grid = star
+            start_stacking = 0
+        else:
+            # star_copy = numpy.array(star)
+            fast_grid = numpy.concatenate((fast_grid, star), axis=1)
+            # testset = 2
+            #fast_grid = numpy.hstack((fast_grid, star))
+            # fast_grid = numpy.array(fast_grid, star)
+            # fast_grid = fast_grid + star
 
+        # plt.imshow(fast_grid, aspect='auto', origin='lower')
+        # plt.show()
+
+        t2_0 = time.time()
         tmp_starfield[0] = i * postage_stamp_size + 23 + offset
         tmp_starfield[1] = 23.
 
         tmp_starfield_images.append(tmp_starfield)
+        t2_1 = time.time()
+        t2_t += (t2_1 - t2_0)
+
+    t1 = time.time()
+    # print ' t1 : %.3f' % t0_t,
+    # print ' t2 : %.3f' % t1_t,
+    # print ' t3 : %.3f' % t2_t,
+    # print ' t : %.3f ]' % (t1-t0),
 
     # plt.imshow(new_grid, aspect='auto', origin='lower')
     # plt.show()
-    return new_grid, tmp_starfield_images
+    return fast_grid, tmp_starfield_images
 
 
 def save_grid(original_path, save_path, gridded_image):
+
+    # fits_hdu = pyfits.open(original_path)
+    # gridded_header_32 = fits_hdu[0].header
+    # gridded_image_32 = gridded_image.astype(numpy.float32)
+    # hdu = pyfits.CompImageHDU(gridded_image_32, gridded_header_32)
+    # hdu.writeto(save_path)
 
     fits_hdu = pyfits.open(original_path)
     fits_hdu[0].data = gridded_image.astype(numpy.float32)
