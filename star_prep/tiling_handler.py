@@ -143,6 +143,14 @@ def get_starfield_images_tile_offset(all_positions, tile_index_x, tile_index_y, 
     return starfield_images_fast
 
 
+def get_galaxy_images_tile(all_positions, tile_index_x, tile_index_y):
+
+    fast_table = numpy.array(copy.deepcopy(all_positions))
+    galaxy_tile = [t for t in fast_table if t[3] == tile_index_x and t[4] == tile_index_y]
+
+    return galaxy_tile
+
+
 def get_starfield_images_tile_2(catalogue_path, tile_index_x, tile_index_y, overlap):
 
     starfield_images = []
@@ -225,6 +233,38 @@ def get_starfield_images_sub_tile(stars, starfield_tile, starfield_subtile, over
     return starfield_images_fast
 
 
+def get_galaxy_images_sub_tile(galaxies, tile_x, tile_y, subtile_x, subtile_y, tile_size, subtile_size):
+
+    x_start_deg = (tile_x * tile_size) + (subtile_x * subtile_size)
+    x_end_deg = (tile_x * tile_size) + (subtile_x * subtile_size) + subtile_size
+
+    y_start_deg = (tile_y * tile_size) + (subtile_y * subtile_size)
+    y_end_deg = (tile_y * tile_size) + (subtile_y * subtile_size) + subtile_size
+
+    fast_table = numpy.array(copy.deepcopy(galaxies))
+    galaxies_tile = [t for t in fast_table if (x_start_deg <= t[7] < x_end_deg) and (y_start_deg <= t[8] < y_end_deg)]
+
+    # display_galaxy_tile(galaxies_tile)
+
+    return galaxies_tile
+
+
+def get_deep_galaxy_images_sub_tile(galaxies, tile_x, tile_y, subtile_x, subtile_y, tile_size, subtile_size):
+
+    x_start_deg = (((tile_x * tile_size) + (subtile_x * subtile_size)) * 4800)/10.0
+    x_end_deg = (((tile_x * tile_size) + (subtile_x * subtile_size) + subtile_size) * 4800)/10.0
+
+    y_start_deg = (((tile_y * tile_size) + (subtile_y * subtile_size)) * 4800)/10.0
+    y_end_deg = (((tile_y * tile_size) + (subtile_y * subtile_size) + subtile_size) * 4800)/10.0
+
+    fast_table = numpy.array(copy.deepcopy(galaxies))
+    galaxies_tile = [t for t in fast_table if (x_start_deg <= t[0] <= x_end_deg) and (y_start_deg <= t[1] <= y_end_deg)]
+
+    # display_deep_galaxy_tile(galaxies_tile)
+
+    return galaxies_tile
+
+
 def display_tile(tile, i):
     real_x_pos = []
     real_y_pos = []
@@ -244,9 +284,55 @@ def display_tile(tile, i):
     plt.title('Starfield - True Gridded Star Single Subfield')
     plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
 
+    # plt.ion()
+    # plt.draw()
+    plt.show()
+
+
+def display_galaxy_tile(tile):
+    real_x_pos = []
+    real_y_pos = []
+
+    for starfield_position in tile:
+        real_x_pos.append(((starfield_position[7] * 4800) / 10) + 23)
+        real_y_pos.append(((starfield_position[8] * 4800) / 10) + 23)
+
+        # real_tile_x = starfield_position[2]
+        # real_tile_y = starfield_position[3]
+
+        # real_tile.append(i)
+
+    plt.ylim([-1, 4801])
+    plt.xlim([-1, 4801])
+    plt.title('Starfield - True Gridded Galaxy Single Subfield')
+    plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
+
     plt.ion()
     plt.draw()
-    #plt.show()
+    # plt.show()
+
+
+def display_deep_galaxy_tile(tile):
+    real_x_pos = []
+    real_y_pos = []
+
+    for starfield_position in tile:
+        real_x_pos.append(starfield_position[0])
+        real_y_pos.append(starfield_position[1])
+
+        # real_tile_x = starfield_position[2]
+        # real_tile_y = starfield_position[3]
+
+        # real_tile.append(i)
+
+    plt.ylim([-1, 4801])
+    plt.xlim([-1, 4801])
+    plt.title('Starfield - True Gridded Galaxy Single Subfield')
+    plt.scatter(real_x_pos, real_y_pos, color=(0.1, 0.0, 0.0), marker='+')
+
+    # plt.ion()
+    # plt.draw()
+    plt.show()
 
 
 def display_tile_stacked(tile):
@@ -383,6 +469,39 @@ def regrid_tile_stacked(gridded_image, starfield_images, postage_stamp_size, off
     return fast_grid, tmp_starfield_images
 
 
+def regrid_tile_galaxy(gridded_image, starfield_images, postage_stamp_size):
+    tmp_starfield_images = []
+
+    start_stacking = 1
+    fast_grid = []
+
+    for i, starfield_image in enumerate(starfield_images):
+
+        tmp_starfield = starfield_image
+        x = tmp_starfield[0]
+        y = tmp_starfield[1]
+
+        star = get_star(x, y, gridded_image)
+
+        if start_stacking:
+            fast_grid = star
+            start_stacking = 0
+        else:
+            fast_grid = numpy.concatenate((fast_grid, star), axis=1)
+
+        # plt.imshow(fast_grid, aspect='auto', origin='lower')
+        # plt.show()
+
+        tmp_starfield[0] = i * postage_stamp_size + 23
+        tmp_starfield[1] = 23.
+
+        tmp_starfield_images.append(tmp_starfield)
+
+    # plt.imshow(new_grid, aspect='auto', origin='lower')
+    # plt.show()
+    return fast_grid, tmp_starfield_images
+
+
 def save_grid(original_path, save_path, gridded_image):
 
     # fits_hdu = pyfits.open(original_path)
@@ -454,8 +573,8 @@ def save_fitstable(table_path, tiled_positions):
     tbhdu = pyfits.new_table(coldefs, nrows=len(tiled_positions))
 
     for c, tiled_position in enumerate(tiled_positions):
-        tbhdu.data[c] = [(tiled_position[6]*4800)/10,
-                         (tiled_position[7]*4800)/10,
+        tbhdu.data[c] = [((tiled_position[6]*4800)/10) + 24,
+                         ((tiled_position[7]*4800)/10) + 24,
                          (tiled_position[0]+2),
                          (tiled_position[1]+1)
                          ]
@@ -497,7 +616,8 @@ def convert_positions(tiled_galaxy_image_path, tiled_starfield_positions, tiled_
     f = open(tiled_starfield_path, 'w')
 
     for RA, DEC, TABLE_DATA in zip(output[0], output[1], table_data):
-        f.write("%.18e %.18e\n" % (RA, DEC))
+        # f.write("%.18e %.18e\n" % (RA, DEC))
+        f.write("%f %f\n" % (RA, DEC))
         # f.write("%.18e %.18e %.18e %.18e 23.0\n" % (
         #     Decimal(RA),
         #     Decimal(DEC),
@@ -557,6 +677,52 @@ def set_header_data(starfield_tile, starfield_subtile, galaxy_tile_image):
     fits_hdu_starfield[0].header.set('GAIN', 10000)
 
     fits_hdu_starfield.writeto(starfield_subtile.image_path, clobber=True)
+
+
+def set_header_data_galaxy(path, tile_x, tile_y, subtile_x, subtile_y, offset_x, offset_y, galaxy_tile_image):
+
+    fits_hdu = pyfits.open(galaxy_tile_image)
+    galaxy_tile_header = fits_hdu[0].header
+
+    # naxis_1 = galaxy_tile_header['NAXIS1']
+    # naxis_2 = galaxy_tile_header['NAXIS2']
+
+    # set the default size of the entire field of view.
+    naxis_1 = 4800
+    naxis_2 = 4800
+
+    # set tile size
+    tile_size = 960
+    subtile_size = 240
+
+    fits_hdu_starfield = pyfits.open(path)
+    fits_hdu_starfield[0].header = galaxy_tile_header
+
+    tile_start_x = (tile_x * tile_size)
+    tile_start_y = (tile_y * tile_size)
+
+    subtile_start_x = (((subtile_x*subtile_size)))
+    subtile_start_y = (((subtile_y*subtile_size)))
+
+    x_offset = naxis_1/2 - (tile_start_x + subtile_start_x)
+    y_offset = naxis_2/2 - (tile_start_y + subtile_start_y)
+
+    offset_x_p = (offset_x * 4800) / 10.0
+    offset_y_p = (offset_y * 4800) / 10.0
+
+    fits_hdu_starfield[0].header.update('CRPIX1', x_offset - offset_x_p)
+    fits_hdu_starfield[0].header.update('CRPIX2', y_offset - offset_y_p)
+
+    # GET THE GS_SCALE AND CONVERT TO RA/DEC BASED ON THE PIXEL SCALE
+    gs_scale = fits_hdu_starfield[0].header['GS_SCALE']
+    cd_value = gs_scale/3600
+
+    fits_hdu_starfield[0].header.set('CD1_1', -cd_value)
+    fits_hdu_starfield[0].header.set('CD1_2', 0.0000000000000)
+    fits_hdu_starfield[0].header.set('CD2_1', 0.0000000000000)
+    fits_hdu_starfield[0].header.set('CD2_2', +cd_value)
+
+    fits_hdu_starfield.writeto(path, clobber=True)
 
 
 def set_header_data_constant(save_path, galaxy_tile_image):

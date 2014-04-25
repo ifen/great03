@@ -16,19 +16,13 @@ ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'branch/control/ground/constant/'
 FILE_NAME = 'starfield_image-'
 
-if len(sys.argv) > 1:
-    NO_THREADS = 1
-    FIT_ORDER = int(sys.argv[2])
-else:
-    NO_THREADS = 1
-    FIT_ORDER = 3
+NO_THREADS = 1
+FIT_ORDER = 3
 
-PROCESS_START = 2
-PROCESS_FINISH = 3
+PROCESS_START = int(sys.argv[1])
+PROCESS_FINISH = int(sys.argv[2])
 
-SAVE_TYPE = 'image0'
-
-print '...starting PSF conversion range (%d, %d) with name : %s' % (PROCESS_START, PROCESS_FINISH, SAVE_TYPE)
+print '...starting PSF conversion range (%d, %d)' % (PROCESS_START, PROCESS_FINISH)
 
 TILE_SIZE = 2
 TILES_IMAGE = int(10. / TILE_SIZE)
@@ -77,7 +71,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
                    ID)
     tmp_env = os.environ
     tmp_env['SWARP_CONFIG'] = LENSFIT_PATH + 'swarp/create_coadd_swarp.swarp'
-
+    SAVE_TYPE = 'image%03d' % ID
     file_list = '%sinput.asc' % branch_path
     catalogue_path = '%s%s.asc' % (branch_path, SAVE_TYPE)
     log_path = '%s%03d.log' % (branch_path, ID)
@@ -86,7 +80,7 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
                                                                      SNR_RATIO,
                                                                      branch_path,
                                                                      catalogue_path,
-								     SAVE_TYPE,
+								                                     SAVE_TYPE,
                                                                      branch_path,
                                                                      log_path)
     os.chdir(LENSFIT_SRC)

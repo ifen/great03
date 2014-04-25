@@ -123,8 +123,8 @@ for ID in range(FIELD_ID, FIELD_ID + 1):
                    BRANCH_PATH,
                    INSTANCE_NAME,
                    ID)
-    for tile_x in range(TILE_X_START, TILE_X_START + TILE_END):
-        for tile_y in range(TILE_Y_START, TILE_Y_START + 1):
+    for tile_x in range(TILE_X_START, TILE_X_START + 5):
+        for tile_y in range(TILE_Y_START, TILE_Y_START + TILE_END):
             sub_directory = '%s%02d_%02d/' % \
                             (branch_path,
                              tile_x,

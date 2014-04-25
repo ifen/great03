@@ -12,15 +12,14 @@ from star_prep.tiling_handler import *
 
 # define the folder paths
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
-BRANCH_PATH = 'branch/control/ground/constant/'
+BRANCH_PATH = 'branch/real_galaxy/ground/constant/'
 FILE_NAME = 'starfield_image-'
 
 SAMPLE_HEADER = '%sutils/sample.fits' \
                 % ROOT_PATH
-PROCESS_START = 2
-PROCESS_FINISH = 3
 
-SAVE_TYPE = 'image0'
+PROCESS_START = 0
+PROCESS_FINISH = 200
 
 POSTAGE_SIZE = 48
 
@@ -39,6 +38,8 @@ def model_psf(package):
 
 for ID in range(PROCESS_START, PROCESS_FINISH):
 
+    SAVE_TYPE = 'image%03d' % ID
+
     starfield_image = StarfieldImage()
     starfield_image.image_id = ID
 
@@ -51,8 +52,8 @@ for ID in range(PROCESS_START, PROCESS_FINISH):
     starfield_image.image_data = load_grid_image(starfield_image.file_path)
 
     # save paths.
-    save_directory = '%scgc_run/%d/' % (branch_collection.branch_path,
-                                                starfield_image.image_id)
+    save_directory = '%srggc_1/%d/' % (branch_collection.branch_path,
+                                       starfield_image.image_id)
 
     save_image = '%s%s.fits' % (save_directory, SAVE_TYPE)
 

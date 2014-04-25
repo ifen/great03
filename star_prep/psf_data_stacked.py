@@ -19,7 +19,6 @@ from star_prep.tiling_handler import *
 # define the folder paths
 ROOT_PATH = '/home/ian/Documents/GREAT03/'
 BRANCH_PATH = 'branch/variable_psf/ground/constant/'
-FILE_NAME = 'starfield_image-'
 
 SAMPLE_HEADER = '%sutils/sample.fits' \
                 % ROOT_PATH
@@ -29,7 +28,7 @@ TILES_IMAGE = int(10. / TILE_SIZE)
 
 SUBTILE_SIZE = 0.5
 SUBTILE_IMAGE = int(TILE_SIZE / SUBTILE_SIZE)
-SUBTILE_OVERLAP = 0.05
+SUBTILE_OVERLAP = 0.04
 
 POSTAGE_SIZE = 48
 PADDING_SIZE = 10
@@ -41,11 +40,25 @@ if len(sys.argv) < 2:
 # disable all warnings
 warnings.filterwarnings("ignore")
 
-FIELD_ID = int(sys.argv[1])
-SUB_FIELDS = 20
+DEEP_DATA = 0
 
-FIELD_START = FIELD_ID * SUB_FIELDS
-FIELD_END = (FIELD_ID * SUB_FIELDS) + SUB_FIELDS
+if DEEP_DATA == 1:
+    FILE_NAME = 'deep_starfield_image-'
+else:
+    FILE_NAME = 'starfield_image-'
+
+if DEEP_DATA == 1:
+    FIELD_ID = int(sys.argv[1])
+    SUB_FIELDS = 1
+
+    FIELD_START = FIELD_ID * SUB_FIELDS
+    FIELD_END = (FIELD_ID * SUB_FIELDS) + SUB_FIELDS
+else:
+    FIELD_ID = int(sys.argv[1])
+    SUB_FIELDS = 20
+
+    FIELD_START = FIELD_ID * SUB_FIELDS
+    FIELD_END = (FIELD_ID * SUB_FIELDS) + SUB_FIELDS
 
 branch_collection = BranchCollection()
 branch_collection.branch_path = '%s%s' % (ROOT_PATH, BRANCH_PATH)
@@ -74,13 +87,21 @@ for ID in range(FIELD_START, FIELD_END):
     # create a sub field instance
     subfield = StarfieldSubField()
     subfield.image_id = ID
+    if DEEP_DATA == 1:
+        subfield.catalogue_path = '%sdeep_star_catalog-%03d.fits' % (branch_collection.branch_path,
+                                                                ID)
+        subfield.offset_path = '%sdeep_subfield_offset-%03d.txt' % (branch_collection.branch_path,
+                                                               ID)
+    else:
+        subfield.catalogue_path = '%sstar_catalog-%03d.fits' % (branch_collection.branch_path,
+                                                                ID)
+        subfield.offset_path = '%ssubfield_offset-%03d.txt' % (branch_collection.branch_path,
+                                                               ID)
+
     subfield.file_name = '%s%03d-0.fits' % (FILE_NAME, ID)
     subfield.file_path = '%s%s' % (branch_collection.branch_path,
                                    subfield.file_name)
-    subfield.catalogue_path = '%sstar_catalog-%03d.fits' % (branch_collection.branch_path,
-                                                            ID)
-    subfield.offset_path = '%ssubfield_offset-%03d.txt' % (branch_collection.branch_path,
-                                                           ID)
+
     print '  loading subfield : %03d' % ID,
     sys.stdout.flush()
     subfield.image_data = load_grid_image(subfield.file_path)
@@ -104,11 +125,15 @@ print '--------------------------------------\n'
 # create the directory to store the stacked field images
 for field in branch_collection.fields:
 
-    # create save_path for fields	
-    field_directory = '%s%s/%02d/' % (branch_collection.branch_path,
-                                      instance_name,
-                                      field.id)
-
+    # create save_path for fields
+    if DEEP_DATA == 1:
+        field_directory = '%s%s/deep_%02d/' % (branch_collection.branch_path,
+                                               instance_name,
+                                               field.id)
+    else:
+        field_directory = '%s%s/%02d/' % (branch_collection.branch_path,
+                                          instance_name,
+                                          field.id)
     field.directory = field_directory
 
     if os.path.isdir(field_directory):
@@ -251,7 +276,7 @@ for tile_x in range(0, TILES_IMAGE):
                 #stacked_stars.sort(key=lambda tup: (tup[4], tup[5]))
                 ## display the tile
                 #print len(stacked_stars)
-                #display_tile(stacked_stars, 1)
+                # display_tile(stacked_stars, 1)
                 #exit(0)
 
                 # save the new regridded image to fits file.
@@ -283,7 +308,11 @@ for tile_x in range(0, TILES_IMAGE):
 
                 set_placeholder(subtile)
 
-                convert_positions('%s[0]' % subtile_imageplaceholder,
+                # convert_positions('%s[0]' % subtile_imageplaceholder,
+                #                   subtile_tablepath,
+                #                   subtile_cataloguepath)
+
+                convert_positions('/home/ian/Documents/GREAT03/utils/sample.fits[0]',
                                   subtile_tablepath,
                                   subtile_cataloguepath)
 
